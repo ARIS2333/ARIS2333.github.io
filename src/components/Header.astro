@@ -1,0 +1,66 @@
+---
+import { site } from "../config/site";
+
+const path = Astro.url.pathname.replace(/\/index\.html$/, "").replace(/\/$/, "") || "/";
+
+const items = [
+  { href: "/work", label: "Work" },
+  { href: "/publications", label: "Publications" },
+  { href: "/experience", label: "Experience" },
+  { href: "/education", label: "Education" },
+  { href: "/blog", label: "Blog" },
+];
+
+function isCurrent(href: string) {
+  return path === href || path.startsWith(`${href}/`);
+}
+---
+
+<header class="site-header">
+  <a class="skip" href="#content">Skip to content</a>
+  <div class="shell header-bar">
+    <a class="brand" href="/">{site.name}</a>
+    <button
+      class="menu-button"
+      type="button"
+      aria-expanded="false"
+      aria-controls="primary-nav"
+      data-menu-button
+    >
+      Menu
+    </button>
+    <nav id="primary-nav" class="primary-nav" aria-label="Primary" data-menu>
+      {
+        items.map((item) => (
+          <a href={item.href} aria-current={isCurrent(item.href) ? "page" : undefined}>
+            {item.label}
+          </a>
+        ))
+      }
+    </nav>
+  </div>
+</header>
+
+<script>
+  const button = document.querySelector<HTMLButtonElement>("[data-menu-button]");
+  const nav = document.querySelector<HTMLElement>("[data-menu]");
+
+  if (button && nav) {
+    const setOpen = (open: boolean) => {
+      button.setAttribute("aria-expanded", String(open));
+      button.textContent = open ? "Close" : "Menu";
+      nav.classList.toggle("is-open", open);
+    };
+
+    button.addEventListener("click", () => {
+      setOpen(button.getAttribute("aria-expanded") !== "true");
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && button.getAttribute("aria-expanded") === "true") {
+        setOpen(false);
+        button.focus();
+      }
+    });
+  }
+</script>

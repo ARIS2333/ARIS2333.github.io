@@ -1,0 +1,53 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import RelatedList from "../components/RelatedList.astro";
+import { getExperience } from "../lib/content";
+import { formatRange } from "../lib/format";
+
+const entries = await getExperience();
+---
+
+<BaseLayout
+  title="Experience"
+  description="Internships and research roles, with the work I owned and links to related projects or notes."
+>
+  <div class="shell">
+    <header class="page-header">
+      <h1>Experience</h1>
+      <p class="lede">Roles are listed from newest to oldest.</p>
+    </header>
+    <div class="record-list">
+      {
+        entries.map(({ entry, relatedProjects, relatedNotes }) => (
+          <article class="record">
+            <h2>{entry.data.organization}</h2>
+            {entry.data.team && <p class="team">{entry.data.team}</p>}
+            <div class="role-row">
+              <h3>{entry.data.role}</h3>
+              <p class="dates">{formatRange(entry.data.start, entry.data.end)}</p>
+            </div>
+            <ul>
+              {entry.data.highlights.map((highlight) => (
+                <li>{highlight}</li>
+              ))}
+            </ul>
+            <RelatedList
+              items={[
+                ...relatedProjects.map((project) => ({
+                  kind: "Project",
+                  href: `/work/${project.id}`,
+                  title: project.data.title,
+                })),
+                ...relatedNotes.map((note) => ({
+                  kind: "Note",
+                  href: `/blog/${note.id}`,
+                  title: note.data.title,
+                })),
+              ]}
+            />
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</BaseLayout>

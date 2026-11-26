@@ -1,0 +1,26 @@
+---
+interface Item {
+  kind: string;
+  href: string;
+  title: string;
+}
+
+interface Props {
+  items: Item[];
+}
+
+const { items } = Astro.props;
+---
+
+{
+  items.length > 0 && (
+    <ul class="related">
+      {items.map((item) => (
+        <li>
+          <span class="related-kind">{item.kind}</span>
+          <a href={item.href}>{item.title}</a>
+        </li>
+      ))}
+    </ul>
+  )
+}

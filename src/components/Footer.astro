@@ -1,0 +1,21 @@
+---
+import { site } from "../config/site";
+
+const links = [
+  ["/work", "Work"],
+  ["/publications", "Publications"],
+  ["/experience", "Experience"],
+  ["/education", "Education"],
+  ["/news", "News"],
+  ["/blog", "Blog"],
+] as const;
+---
+
+<footer class="site-footer">
+  <div class="shell footer-bar">
+    <p class="footer-note">{site.name}</p>
+    <nav class="footer-nav" aria-label="Footer">
+      {links.map(([href, label]) => <a href={href}>{label}</a>)}
+    </nav>
+  </div>
+</footer>

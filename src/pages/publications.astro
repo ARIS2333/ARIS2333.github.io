@@ -1,0 +1,72 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { getPublications, getProject, groupByYear } from "../lib/content";
+import { formatAuthors } from "../lib/profile";
+
+const publications = await getPublications();
+const groups = groupByYear(publications);
+
+const projectTitles = new Map<string, string>();
+for (const item of publications) {
+  if (!item.data.projectId || projectTitles.has(item.data.projectId)) continue;
+  const project = await getProject(item.data.projectId);
+  projectTitles.set(item.data.projectId, project.data.title);
+}
+---
+
+<BaseLayout
+  title="Publications"
+  description="Papers in reverse chronological order, with links to a manuscript, code, or project when one exists."
+>
+  <div class="shell">
+    <header class="page-header">
+      <h1>Publications</h1>
+      <p class="lede">Grouped by year. My name is set in bold.</p>
+    </header>
+    {
+      groups.map((group) => (
+        <section class="year-block" aria-labelledby={`year-${group.year}`}>
+          <h2 id={`year-${group.year}`}>{group.year}</h2>
+          <ol class="pub-list">
+            {group.items.map((item) => {
+              const paper = item.data.links?.paper;
+              const code = item.data.links?.code;
+              const projectId = item.data.projectId;
+              return (
+                <li id={item.id}>
+                  <h3 class="pub-title">
+                    {item.data.title}
+                    {item.data.representative && <span class="marker">Representative</span>}
+                  </h3>
+                  <p class="pub-authors" set:html={formatAuthors(item.data.authors)} />
+                  <p class="pub-venue">
+                    {item.data.venue}, {item.data.year}
+                  </p>
+                  {(paper || code || projectId) && (
+                    <ul class="pub-links">
+                      {paper && (
+                        <li>
+                          <a href={paper}>Paper</a>
+                        </li>
+                      )}
+                      {code && (
+                        <li>
+                          <a href={code}>Code</a>
+                        </li>
+                      )}
+                      {projectId && (
+                        <li>
+                          <a href={`/work/${projectId}`}>Project</a>
+                        </li>
+                      )}
+                    </ul>
+                  )}
+                </li>
+              );
+            })}
+          </ol>
+        </section>
+      ))
+    }
+  </div>
+</BaseLayout>

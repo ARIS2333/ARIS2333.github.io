@@ -1,0 +1,98 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { site } from "../config/site";
+import { getFeaturedProjects, getNews } from "../lib/content";
+import { formatISODate, formatNewsDate } from "../lib/format";
+import { affiliationLine, cvHref, emailAddress, portrait, seekingText, socialLinks } from "../lib/profile";
+
+const featured = await getFeaturedProjects();
+const latest = (await getNews())[0];
+const cv = cvHref();
+const email = emailAddress();
+const socials = socialLinks();
+const affiliation = affiliationLine();
+const seeking = seekingText();
+const photo = portrait();
+---
+
+<BaseLayout
+  title={site.name}
+  description="CS PhD student seeking an internship. Research focus, selected work, and the latest update."
+>
+  <div class="shell">
+    <section class="hero" aria-label="Introduction">
+      <h1 class="name">{site.name}</h1>
+      {site.researchFocus.trim() && <p class="research">{site.researchFocus}</p>}
+      {
+        seeking && (
+          <div class="seeking">
+            <p class="seeking-kicker">Seeking internship</p>
+            <p class="seeking-line">{seeking}</p>
+          </div>
+        )
+      }
+      {affiliation && <p class="affiliation">{affiliation}</p>}
+      {site.bio.trim() && <p class="bio">{site.bio}</p>}
+      <img class="portrait" src={photo.src} alt={photo.alt} width="320" height="400" />
+      {
+        (cv || email) && (
+          <div class="actions">
+            {cv && (
+              <a class="button" href={cv} download>
+                Download CV
+              </a>
+            )}
+            {email && (
+              <a class="button button-quiet" href={`mailto:${email}`}>
+                Email
+              </a>
+            )}
+          </div>
+        )
+      }
+      {
+        socials.length > 0 && (
+          <p class="social">
+            {socials.map((item) => (
+              <a href={item.href}>{item.label}</a>
+            ))}
+          </p>
+        )
+      }
+    </section>
+
+    <section class="section" aria-labelledby="selected-work">
+      <h2 id="selected-work">Selected Work</h2>
+      <ol class="feature-list">
+        {
+          featured.map((project) => (
+            <li>
+              <h3>
+                <a href={`/work/${project.id}`}>{project.data.title}</a>
+              </h3>
+              <p>{project.data.summary}</p>
+              <a class="more" href={`/work/${project.id}`}>
+                Read the project
+              </a>
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+
+    {
+      latest && (
+        <section class="section" aria-labelledby="latest-news">
+          <h2 id="latest-news">Latest News</h2>
+          <article class="news-lead">
+            <time datetime={formatISODate(latest.data.date)}>{formatNewsDate(latest.data.date)}</time>
+            <p>{latest.data.content}</p>
+          </article>
+          <a class="section-link" href="/news">
+            All news →
+          </a>
+        </section>
+      )
+    }
+  </div>
+</BaseLayout>

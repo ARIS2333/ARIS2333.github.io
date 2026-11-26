@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="220" viewBox="0 0 880 220" role="img">
+  <rect width="880" height="220" fill="#f6f6f4"/>
+  <rect x="36" y="64" width="200" height="92" fill="#ffffff" stroke="#2a2a28" stroke-width="1.5"/>
+  <rect x="340" y="64" width="200" height="92" fill="#ffffff" stroke="#2a2a28" stroke-width="1.5"/>
+  <rect x="644" y="64" width="200" height="92" fill="#ffffff" stroke="#2a2a28" stroke-width="1.5"/>
+  <path d="M236 110 H340 M540 110 H644" fill="none" stroke="#2a2a28" stroke-width="1.5"/>
+  <text x="136" y="118" text-anchor="middle" fill="#2a2a28" font-family="Georgia, serif" font-size="20">Question</text>
+  <text x="440" y="118" text-anchor="middle" fill="#2a2a28" font-family="Georgia, serif" font-size="20">Method</text>
+  <text x="744" y="118" text-anchor="middle" fill="#2a2a28" font-family="Georgia, serif" font-size="20">Result</text>
+</svg>

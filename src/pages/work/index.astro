@@ -1,0 +1,37 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getProjects } from "../../lib/content";
+
+const projects = await getProjects();
+---
+
+<BaseLayout
+  title="Work"
+  description="Selected and earlier projects, with the problem and the part I owned."
+>
+  <div class="shell">
+    <header class="page-header">
+      <h1>Work</h1>
+      <p class="lede">Each project names the problem and the part I was responsible for.</p>
+    </header>
+    <ol class="catalog">
+      {
+        projects.map((project) => (
+          <li>
+            <h2>
+              <a href={`/work/${project.id}`}>{project.data.title}</a>
+            </h2>
+            <div class="fact">
+              <span class="fact-label">Problem</span>
+              <p>{project.data.problem}</p>
+            </div>
+            <div class="fact">
+              <span class="fact-label">Contribution</span>
+              <p>{project.data.summary}</p>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</BaseLayout>
