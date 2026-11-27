@@ -483,6 +483,16 @@ main:focus {
   background: var(--bg-muted);
 }
 
+.photo-grid.is-mosaic {
+  position: relative;
+  display: block;
+}
+
+.photo-grid.is-mosaic .photo-card img {
+  height: 100%;
+  object-fit: contain;
+}
+
 .photo-place {
   position: absolute;
   right: 0;

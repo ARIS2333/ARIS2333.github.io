@@ -5,18 +5,19 @@ import type { GalleryPhoto } from "../lib/gallery";
 interface Props {
   photos: GalleryPhoto[];
   featured?: boolean;
+  mosaic?: boolean;
 }
 
-const { photos, featured = false } = Astro.props;
+const { photos, featured = false, mosaic = false } = Astro.props;
 const widths = featured ? [384, 768, 1152] : [256, 512, 768];
 const sizes = featured
   ? "(max-width: 720px) calc(100vw - 1.5rem), (max-width: 1090px) calc(100vw - 27.25rem), 24rem"
   : "(max-width: 720px) calc((100vw - 2.2rem) / 2), 15rem";
 ---
 
-<div class:list={["photo-grid", { "is-featured": featured }]}>
+<div class:list={["photo-grid", { "is-featured": featured, "is-mosaic": mosaic }]}>
   {
-    photos.map(async ({ image, place }, index) => {
+    photos.map(async ({ image, place, featured: isFeatured, score }, index) => {
       const detail = await getImage({
         src: image,
         width: 1800,
@@ -26,7 +27,15 @@ const sizes = featured
         quality: 82,
       });
       return (
-        <a class="photo-card" href={detail.src} data-photo data-place={place} aria-label={`View photograph from ${place}`}>
+        <a
+          class="photo-card"
+          href={detail.src}
+          data-photo
+          data-place={place}
+          data-score={score}
+          data-featured={isFeatured ? "true" : "false"}
+          aria-label={`View photograph from ${place}`}
+        >
           <Image
             src={image}
             alt={place}
@@ -44,3 +53,157 @@ const sizes = featured
     })
   }
 </div>
+
+<script>
+  const grids = [...document.querySelectorAll<HTMLElement>(".photo-grid.is-mosaic")];
+
+  function measure(card: HTMLElement) {
+    const image = card.querySelector("img");
+    const naturalWidth = image?.naturalWidth || image?.width || 3;
+    const naturalHeight = image?.naturalHeight || image?.height || 2;
+    const score = Number(card.dataset.score || "3");
+    return {
+      card,
+      aspect: naturalWidth / naturalHeight,
+      featured: card.dataset.featured === "true",
+      score: score >= 3 ? 3 : score === 2 ? 2 : 1,
+    };
+  }
+
+  function rowHeight(items: { aspect: number }[], container: number, gap: number) {
+    const aspects = items.reduce((sum, item) => sum + item.aspect, 0);
+    return (container - gap * Math.max(0, items.length - 1)) / aspects;
+  }
+
+  function rowTarget(items: { featured: boolean; score: number }[]) {
+    const base = 400;
+    const factor = items.reduce((sum, item) => sum + (item.score === 3 ? 1 : item.score === 2 ? 0.9 : 0.8), 0) / items.length;
+    return base * factor;
+  }
+
+  function layoutMosaic(grid: HTMLElement) {
+    const cards = [...grid.querySelectorAll<HTMLElement>(":scope > .photo-card")];
+    const visible = cards.filter((card) => !card.hidden);
+    const gap = 12;
+    const container = grid.clientWidth;
+
+    for (const card of cards) {
+      if (!card.hidden) continue;
+      card.style.position = "";
+      card.style.left = "";
+      card.style.top = "";
+      card.style.width = "";
+      card.style.height = "";
+    }
+
+    if (!container || visible.length === 0) {
+      grid.style.height = "0px";
+      return;
+    }
+
+    const items = visible.map(measure);
+    const rows: (typeof items)[] = [];
+    let index = 0;
+    while (index < items.length) {
+      const row = [items[index]];
+      index += 1;
+      while (index < items.length) {
+        const withNext = row.concat(items[index]);
+        const nextHeight = rowHeight(withNext, container, gap);
+        const target = rowTarget(withNext);
+        if (nextHeight < target) {
+          const currentHeight = rowHeight(row, container, gap);
+          const closer = Math.abs(nextHeight - target) < Math.abs(currentHeight - target);
+          if (closer && nextHeight >= target * 0.82) {
+            row.push(items[index]);
+            index += 1;
+          }
+          break;
+        }
+        row.push(items[index]);
+        index += 1;
+      }
+      rows.push(row);
+    }
+
+    for (let rowIndex = 1; rowIndex < rows.length; rowIndex += 1) {
+      const current = rows[rowIndex];
+      const previous = rows[rowIndex - 1];
+      let guard = 0;
+      while (guard < 6 && previous.length > 1) {
+        guard += 1;
+        const target = rowTarget(current);
+        const before = Math.abs(rowHeight(previous, container, gap) - rowTarget(previous)) + Math.abs(rowHeight(current, container, gap) - target);
+        const moved = previous[previous.length - 1];
+        const nextPrevious = previous.slice(0, -1);
+        const nextCurrent = [moved, ...current];
+        const after = Math.abs(rowHeight(nextPrevious, container, gap) - rowTarget(nextPrevious)) + Math.abs(rowHeight(nextCurrent, container, gap) - rowTarget(nextCurrent));
+        if (after >= before - 8) break;
+        previous.pop();
+        current.unshift(moved);
+      }
+    }
+
+    if (rows.length > 1) {
+      const last = rows[rows.length - 1];
+      const previous = rows[rows.length - 2];
+      const target = rowTarget(last);
+      const justified = rowHeight(last, container, gap);
+      const used = last.reduce((sum, item) => sum + target * item.aspect, 0) + gap * (last.length - 1);
+      if (justified > target * 1.28 && used < container * 0.85) {
+        const merged = previous.concat(last);
+        if (rowHeight(merged, container, gap) >= target * 0.7) {
+          rows[rows.length - 2] = merged;
+          rows.pop();
+        }
+      }
+    }
+
+    let y = 0;
+    for (const rowItems of rows) {
+      const target = rowTarget(rowItems);
+      let height = rowHeight(rowItems, container, gap);
+      if (height > target * 1.28) height = target;
+      let x = 0;
+      for (const item of rowItems) {
+        const width = height * item.aspect;
+        item.card.style.position = "absolute";
+        item.card.style.left = `${x}px`;
+        item.card.style.top = `${y}px`;
+        item.card.style.width = `${width}px`;
+        item.card.style.height = `${height}px`;
+        x += width + gap;
+      }
+      y += height + gap;
+    }
+    grid.style.height = `${Math.max(0, y - gap)}px`;
+  }
+
+  function layoutAll() {
+    for (const grid of grids) layoutMosaic(grid);
+  }
+
+  let frame = 0;
+  function schedule() {
+    cancelAnimationFrame(frame);
+    frame = requestAnimationFrame(layoutAll);
+  }
+
+  if (grids.length > 0) {
+    for (const grid of grids) {
+      for (const image of grid.querySelectorAll("img")) {
+        if (!image.complete) image.addEventListener("load", schedule, { once: true });
+      }
+    }
+    document.addEventListener("gallery-layout", schedule);
+    for (const grid of grids) {
+      let width = 0;
+      new ResizeObserver(() => {
+        if (grid.clientWidth === width) return;
+        width = grid.clientWidth;
+        schedule();
+      }).observe(grid);
+    }
+    schedule();
+  }
+</script>

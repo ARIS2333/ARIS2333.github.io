@@ -9,6 +9,7 @@ export type GalleryPhoto = {
   place: string;
   image: ImageMetadata;
   featured: boolean;
+  score: number;
 };
 
 export type GalleryGroup = {
@@ -44,7 +45,8 @@ export function getGalleryPhotos(): GalleryPhoto[] {
     .sort(comparePhotos)
     .map((path) => {
       const [, , , place, file] = path.split("/");
-      return { place, image: images[path], featured: photoRank(file).featured };
+      const rank = photoRank(file);
+      return { place, image: images[path], featured: rank.featured, score: rank.score };
     });
 }
 

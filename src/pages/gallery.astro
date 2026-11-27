@@ -39,7 +39,7 @@ const groups = getGalleryGroups(photos);
         <h2 id="gallery-results-title" aria-live="polite">All</h2>
       </header>
       <div class="gallery-results-list">
-        <PhotoGrid photos={photos} />
+        <PhotoGrid photos={photos} mosaic />
       </div>
     </section>
   </div>
@@ -62,6 +62,7 @@ const groups = getGalleryGroups(photos);
     if (select) select.value = place;
     if (title) title.textContent = place === "all" ? "All" : place;
     window.scrollTo(0, 0);
+    document.dispatchEvent(new CustomEvent("gallery-layout"));
   }
 
   for (const button of buttons) {
