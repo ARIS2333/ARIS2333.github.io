@@ -121,7 +121,7 @@ const { sections, posts, activeSlug, activeName, showBack = false } = Astro.prop
       option.addEventListener("click", () => {
         chooseSort(option.dataset.sort === "desc" ? "desc" : "asc");
         setSortOpen(false);
-        document.querySelector(".blog-results-list")?.scrollTo(0, 0);
+        window.scrollTo(0, 0);
       });
     }
 

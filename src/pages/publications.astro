@@ -61,7 +61,11 @@ const titleText = (title: string) =>
                       {item.data.tags.map((tag) => (
                         <span>{tag}</span>
                       ))}
-                      {code && <a href={code}>Code</a>}
+                      {code && (
+                        <a href={code} target="_blank" rel="noopener noreferrer">
+                          Code
+                        </a>
+                      )}
                     </p>
                   )}
                 </li>

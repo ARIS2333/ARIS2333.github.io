@@ -6,11 +6,11 @@ import { formatISODate, formatNewsDate } from "../lib/format";
 const news = await getNews();
 ---
 
-<BaseLayout title="News" description="Short updates on papers, projects, talks, and internship search status.">
+<BaseLayout title="News" description="Paper acceptances, project milestones, and academic updates.">
   <div class="shell">
     <header class="page-header">
       <h1>News</h1>
-      <p class="lede">Paper decisions, project releases, talks, and changes in internship search status.</p>
+      <p class="lede">Paper acceptances, project milestones, and academic updates.</p>
     </header>
     <ol class="news-list">
       {
@@ -23,7 +23,9 @@ const news = await getNews();
               {item.data.href && (
                 <>
                   {" "}
-                  <a href={item.data.href}>{item.data.linkLabel || "Link"}</a>
+                  <a href={item.data.href} target="_blank" rel="noopener noreferrer">
+                    {item.data.linkLabel || "Link"}
+                  </a>
                 </>
               )}
             </p>

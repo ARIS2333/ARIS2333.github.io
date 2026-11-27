@@ -62,7 +62,9 @@ const workExperience = [...jobs].sort(
                 {(entry.data.thesis || entry.data.thesisUrl) && (
                   <p class="meta-line">
                     {entry.data.thesisUrl ? (
-                      <a href={entry.data.thesisUrl}>{entry.data.thesis || "Thesis"}</a>
+                      <a href={entry.data.thesisUrl} target="_blank" rel="noopener noreferrer">
+                        {entry.data.thesis || "Thesis"}
+                      </a>
                     ) : (
                       entry.data.thesis
                     )}
