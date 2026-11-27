@@ -35,5 +35,5 @@ Outside of work, I enjoy traveling with a camera—my <a href="/gallery">gallery
     scholar: "https://scholar.google.com/citations?user=4oc19mAAAAAJ&hl=en",
     linkedin: "https://www.linkedin.com/in/kehao-zheng-0333502b7/",
   },
-  url: "https://example.com",
+  url: "https://aris2333.github.io",
 };
