@@ -1,17 +1,10 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { getPublications, getProject, groupByYear } from "../lib/content";
+import { getPublications, groupByYear } from "../lib/content";
 import { formatAuthors } from "../lib/profile";
 
 const publications = await getPublications();
 const groups = groupByYear(publications);
-
-const projectTitles = new Map<string, string>();
-for (const item of publications) {
-  if (!item.data.projectId || projectTitles.has(item.data.projectId)) continue;
-  const project = await getProject(item.data.projectId);
-  projectTitles.set(item.data.projectId, project.data.title);
-}
 ---
 
 <BaseLayout
@@ -21,7 +14,6 @@ for (const item of publications) {
   <div class="shell">
     <header class="page-header">
       <h1>Publications</h1>
-      <p class="lede">Grouped by year. My name is set in bold.</p>
     </header>
     {
       groups.map((group) => (
@@ -31,35 +23,27 @@ for (const item of publications) {
             {group.items.map((item) => {
               const paper = item.data.links?.paper;
               const code = item.data.links?.code;
-              const projectId = item.data.projectId;
               return (
-                <li id={item.id}>
+                <li class="pub-card" id={item.id}>
                   <h3 class="pub-title">
-                    {item.data.title}
-                    {item.data.representative && <span class="marker">Representative</span>}
+                    {paper ? <a href={paper}>{item.data.title}</a> : item.data.title}
                   </h3>
                   <p class="pub-authors" set:html={formatAuthors(item.data.authors)} />
-                  <p class="pub-venue">
-                    {item.data.venue}, {item.data.year}
+                  <p class="pub-meta">
+                    <span>
+                      {item.data.venue} {item.data.year}
+                    </span>
+                    {item.data.status === "accepted" && <span>Just accepted</span>}
+                    {item.data.representative && <span>Representative</span>}
                   </p>
-                  {(paper || code || projectId) && (
-                    <ul class="pub-links">
-                      {paper && (
-                        <li>
-                          <a href={paper}>Paper</a>
-                        </li>
-                      )}
-                      {code && (
-                        <li>
-                          <a href={code}>Code</a>
-                        </li>
-                      )}
-                      {projectId && (
-                        <li>
-                          <a href={`/work/${projectId}`}>Project</a>
-                        </li>
-                      )}
-                    </ul>
+                  {item.data.summary && <p class="pub-summary">{item.data.summary}</p>}
+                  {(item.data.tags.length > 0 || code) && (
+                    <p class="pub-foot">
+                      {item.data.tags.map((tag) => (
+                        <span>{tag}</span>
+                      ))}
+                      {code && <a href={code}>Code</a>}
+                    </p>
                   )}
                 </li>
               );

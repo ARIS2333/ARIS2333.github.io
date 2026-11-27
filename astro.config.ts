@@ -5,6 +5,10 @@ import { site } from "./src/config/site";
 export default defineConfig({
   site: site.url,
   output: "static",
+  redirects: {
+    "/education": "/experience",
+    "/work": "/",
+  },
   integrations: [sitemap()],
   markdown: {
     shikiConfig: {

@@ -2,7 +2,7 @@
 import { getEntry, render } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import Toc from "../../components/Toc.astro";
-import { getPublishedPosts } from "../../lib/content";
+import { getPublishedPosts, sectionHref, tagHref } from "../../lib/content";
 import { formatISODate, formatNewsDate } from "../../lib/format";
 
 export async function getStaticPaths() {
@@ -30,12 +30,15 @@ const { Content, headings } = await render(post);
         <p class="dek">{post.data.description}</p>
         <p class="post-meta">
           <time datetime={formatISODate(post.data.date)}>{formatNewsDate(post.data.date)}</time>
+          {post.data.category && <a href={sectionHref(post.data.category)}>{post.data.category}</a>}
         </p>
         {
           post.data.tags.length > 0 && (
             <ul class="tag-list">
               {post.data.tags.map((tag) => (
-                <li>{tag}</li>
+                <li>
+                  <a href={tagHref(tag)}>{tag}</a>
+                </li>
               ))}
             </ul>
           )

@@ -1,0 +1,77 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Lightbox from "../components/Lightbox.astro";
+import PhotoGrid from "../components/PhotoGrid.astro";
+import { getGalleryGroups, getGalleryPhotos } from "../lib/gallery";
+
+const photos = getGalleryPhotos();
+const groups = getGalleryGroups(photos);
+---
+
+<BaseLayout title="Gallery" description="Photographs grouped by place.">
+  <div class="gallery-browser">
+    <aside class="gallery-filter">
+      <h1>Gallery</h1>
+      <label class="gallery-place-select" hidden>
+        Place
+        <select data-place-select>
+          <option value="all">All ({photos.length})</option>
+          {groups.map((group) => <option value={group.place}>{group.place} ({group.photos.length})</option>)}
+        </select>
+      </label>
+      <nav aria-label="Places">
+        <button type="button" data-filter="all" aria-pressed="true">
+          <span>All</span>
+          <span class="count">{photos.length}</span>
+        </button>
+        {
+          groups.map((group) => (
+            <button type="button" data-filter={group.place} aria-pressed="false">
+              <span>{group.place}</span>
+              <span class="count">{group.photos.length}</span>
+            </button>
+          ))
+        }
+      </nav>
+    </aside>
+    <section class="gallery-results" aria-labelledby="gallery-results-title">
+      <header class="gallery-results-head">
+        <h2 id="gallery-results-title" aria-live="polite">All</h2>
+      </header>
+      <div class="gallery-results-list">
+        <PhotoGrid photos={photos} />
+      </div>
+    </section>
+  </div>
+  <Lightbox />
+</BaseLayout>
+
+<script>
+  const buttons = [...document.querySelectorAll<HTMLButtonElement>(".gallery-filter [data-filter]")];
+  const cards = [...document.querySelectorAll<HTMLElement>(".gallery-results [data-photo]")];
+  const title = document.querySelector("#gallery-results-title");
+  const select = document.querySelector<HTMLSelectElement>("[data-place-select]");
+
+  function showPlace(place: string) {
+    for (const card of cards) {
+      card.hidden = place !== "all" && card.dataset.place !== place;
+    }
+    for (const button of buttons) {
+      button.setAttribute("aria-pressed", String(button.dataset.filter === place));
+    }
+    if (select) select.value = place;
+    if (title) title.textContent = place === "all" ? "All" : place;
+    window.scrollTo(0, 0);
+  }
+
+  for (const button of buttons) {
+    button.addEventListener("click", () => {
+      showPlace(button.dataset.filter || "all");
+    });
+  }
+
+  if (select) {
+    select.closest("label")?.removeAttribute("hidden");
+    select.addEventListener("change", () => showPlace(select.value));
+  }
+</script>

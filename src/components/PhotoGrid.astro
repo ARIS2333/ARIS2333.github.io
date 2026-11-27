@@ -1,0 +1,46 @@
+---
+import { Image, getImage } from "astro:assets";
+import type { GalleryPhoto } from "../lib/gallery";
+
+interface Props {
+  photos: GalleryPhoto[];
+  featured?: boolean;
+}
+
+const { photos, featured = false } = Astro.props;
+const widths = featured ? [384, 768, 1152] : [256, 512, 768];
+const sizes = featured
+  ? "(max-width: 720px) calc(100vw - 1.5rem), (max-width: 1090px) calc(100vw - 27.25rem), 24rem"
+  : "(max-width: 720px) calc((100vw - 2.2rem) / 2), 15rem";
+---
+
+<div class:list={["photo-grid", { "is-featured": featured }]}>
+  {
+    photos.map(async ({ image, place }, index) => {
+      const detail = await getImage({
+        src: image,
+        width: 1800,
+        height: 1800,
+        fit: "contain",
+        format: "webp",
+        quality: 82,
+      });
+      return (
+        <a class="photo-card" href={detail.src} data-photo data-place={place} aria-label={`View photograph from ${place}`}>
+          <Image
+            src={image}
+            alt={place}
+            width={widths[1]}
+            widths={widths}
+            sizes={sizes}
+            format="webp"
+            quality={75}
+            loading={featured || index > 2 ? "lazy" : "eager"}
+            decoding="async"
+          />
+          <span class="photo-place" aria-hidden="true">{place}</span>
+        </a>
+      );
+    })
+  }
+</div>

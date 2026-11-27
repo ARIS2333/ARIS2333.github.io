@@ -1,14 +1,12 @@
 ---
-import { site } from "../config/site";
-
 const path = Astro.url.pathname.replace(/\/index\.html$/, "").replace(/\/$/, "") || "/";
 
 const items = [
-  { href: "/work", label: "Work" },
   { href: "/publications", label: "Publications" },
   { href: "/experience", label: "Experience" },
-  { href: "/education", label: "Education" },
   { href: "/blog", label: "Blog" },
+  { href: "/news", label: "News" },
+  { href: "/gallery", label: "Gallery" },
 ];
 
 function isCurrent(href: string) {
@@ -19,7 +17,7 @@ function isCurrent(href: string) {
 <header class="site-header">
   <a class="skip" href="#content">Skip to content</a>
   <div class="shell header-bar">
-    <a class="brand" href="/">{site.name}</a>
+    <a class="brand" href="/" aria-current={path === "/" ? "page" : undefined}>Home</a>
     <button
       class="menu-button"
       type="button"

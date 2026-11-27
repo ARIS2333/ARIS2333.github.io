@@ -1,4 +1,10 @@
+import type { ImageMetadata } from "astro";
 import { site } from "../config/site";
+
+const portraits = import.meta.glob<ImageMetadata>(
+  "../assets/*.{jpg,jpeg,png,webp,avif}",
+  { eager: true, import: "default" },
+);
 
 export function affiliationLine() {
   return [site.affiliation, site.lab]
@@ -7,16 +13,13 @@ export function affiliationLine() {
     .join(" · ");
 }
 
-export function seekingText() {
-  if (!site.seeking.active) return "";
-  return [
-    ...site.seeking.roles,
-    ...site.seeking.areas,
-    site.seeking.availability,
-  ]
-    .map((part) => part.trim())
-    .filter(Boolean)
-    .join(" · ");
+export function seekingFacts() {
+  if (!site.seeking.active) return null;
+  const roles = site.seeking.roles.map((part) => part.trim()).filter(Boolean).join(", ");
+  const areas = site.seeking.areas.map((part) => part.trim()).filter(Boolean).join(", ");
+  const when = site.seeking.availability.trim();
+  if (!roles && !areas && !when) return null;
+  return { roles, areas, when };
 }
 
 export function emailAddress() {
@@ -28,8 +31,10 @@ export function cvHref() {
 }
 
 export function portrait() {
+  const src = site.portrait.trim();
   return {
-    src: site.portrait.trim() || "/images/portrait.svg",
+    src,
+    image: portraits[`../assets/${src}`],
     alt: site.portraitAlt.trim() || "Portrait placeholder",
   };
 }
@@ -43,7 +48,7 @@ const socialLabels = [
 export function socialLinks() {
   return socialLabels.flatMap(([key, label]) => {
     const href = site.links[key].trim();
-    return href ? [{ label, href }] : [];
+    return href ? [{ key, label, href }] : [];
   });
 }
 

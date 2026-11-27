@@ -17,6 +17,7 @@ const news = await getNews();
         news.map((item) => (
           <li>
             <time datetime={formatISODate(item.data.date)}>{formatNewsDate(item.data.date)}</time>
+            <span class="news-label">{item.data.label}</span>
             <p>
               {item.data.content}
               {item.data.href && (

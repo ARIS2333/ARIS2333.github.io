@@ -1,0 +1,41 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { sectionHref, tagHref } from "../lib/content";
+import { formatISODate, formatNewsDate } from "../lib/format";
+
+interface Props {
+  posts: CollectionEntry<"blog">[];
+  showSection?: boolean;
+  showTags?: boolean;
+}
+
+const { posts, showSection = false, showTags = true } = Astro.props;
+---
+
+<ol class="post-list">
+  {
+    posts.map((post) => (
+      <li class="note-card">
+        <h2>
+          <a href={`/blog/${post.id}`}>{post.data.title}</a>
+        </h2>
+        <p class="note-dek">{post.data.description}</p>
+        {showTags && post.data.tags.length > 0 && (
+          <ul class="tag-list">
+            {post.data.tags.map((tag) => (
+              <li>
+                <a href={tagHref(tag)}>{tag}</a>
+              </li>
+            ))}
+          </ul>
+        )}
+        <p class="post-meta">
+          <time datetime={formatISODate(post.data.date)}>{formatNewsDate(post.data.date)}</time>
+          {showSection && post.data.category && (
+            <a href={sectionHref(post.data.category)}>{post.data.category}</a>
+          )}
+        </p>
+      </li>
+    ))
+  }
+</ol>

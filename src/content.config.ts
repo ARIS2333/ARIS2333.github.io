@@ -49,6 +49,9 @@ const publications = defineCollection({
     year: z.number().int(),
     month: z.number().int().min(1).max(12).optional(),
     representative: z.boolean().default(false),
+    status: z.enum(["accepted"]).optional(),
+    summary: z.string().min(1).optional(),
+    tags: z.array(z.string().min(1)).default([]),
     projectId: z.string().min(1).optional(),
     links: z
       .object({
@@ -89,7 +92,10 @@ const education = defineCollection({
     field: z.string().min(1),
     start: z.coerce.date(),
     end: z.coerce.date().optional(),
+    precision: z.enum(["year", "month"]).default("month"),
     advisor: z.string().min(1).optional(),
+    detail: z.string().min(1).optional(),
+    note: z.string().min(1).optional(),
     lab: z.string().min(1).optional(),
     thesis: z.string().min(1).optional(),
     thesisUrl: link.optional(),
@@ -104,9 +110,25 @@ const news = defineCollection({
   }),
   schema: z.object({
     date: z.coerce.date(),
+    label: z.string().min(1),
     content: z.string().min(1),
     href: link.optional(),
     linkLabel: z.string().min(1).optional(),
+  }),
+});
+
+const photographs = defineCollection({
+  loader: glob({
+    pattern: "**/*.{yaml,yml}",
+    base: "./src/content/photographs",
+    generateId: entryId,
+  }),
+  schema: z.object({
+    src: link,
+    alt: z.string().min(1),
+    caption: z.string().min(1),
+    year: z.number().int().optional(),
+    order: z.number().int(),
   }),
 });
 
@@ -120,6 +142,7 @@ const blog = defineCollection({
     title: z.string().min(1),
     description: z.string().min(1),
     date: z.coerce.date(),
+    category: z.string().trim().min(1).optional(),
     tags: z.array(z.string().min(1)).default([]),
     draft: z.boolean().default(true),
     projectId: z.string().min(1).optional(),
@@ -132,5 +155,6 @@ export const collections = {
   experience,
   education,
   news,
+  photographs,
   blog,
 };

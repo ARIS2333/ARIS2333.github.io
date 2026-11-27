@@ -27,6 +27,11 @@ export function formatRange(start: Date, end?: Date) {
   return `${formatMonthYear(start)} – ${end ? formatMonthYear(end) : "Present"}`;
 }
 
+export function formatYearRange(start: Date, end?: Date) {
+  const year = (date: Date) => String(date.getUTCFullYear());
+  return `${year(start)} – ${end ? year(end) : "Present"}`;
+}
+
 export function paragraphs(text: string) {
   return text
     .split(/\n\n+/)

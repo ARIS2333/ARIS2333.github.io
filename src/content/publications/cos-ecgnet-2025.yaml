@@ -1,0 +1,20 @@
+title: "Lightweight cosine convolution network for sleep apnea detection with single-lead ECG"
+authors:
+  - Rui Zhang
+  - Kehao Zheng
+  - Yong Wang
+  - Weidong Zhou
+  - Lan Tian
+  - Guoyang Liu
+venue: Neurocomputing
+year: 2025
+month: 12
+summary: "Overnight lab studies do not scale, and many ECG models are too large for a wearable. Cos-ECGNet detects obstructive sleep apnea from a single-lead ECG. Cosine filters follow the repeating heart-rate pattern of an apnea event, and a second block fuses RR intervals with R-peak amplitude. The network has 1,186 parameters. I wrote the original draft and contributed the method, the investigation, and the formal analysis."
+tags:
+  - Deep learning
+  - ECG
+  - Signal processing
+  - Lightweight models
+  - Interpretability
+links:
+  paper: https://www.sciencedirect.com/science/article/abs/pii/S0925231225031297

@@ -1,0 +1,44 @@
+<dialog class="lightbox" data-lightbox aria-label="Photograph">
+  <button type="button" class="lightbox-close" data-lightbox-close>Close</button>
+  <img alt="" data-lightbox-img />
+  <p class="lightbox-place" data-lightbox-place></p>
+</dialog>
+
+<script>
+  const dialog = document.querySelector<HTMLDialogElement>("[data-lightbox]");
+  const image = dialog?.querySelector<HTMLImageElement>("[data-lightbox-img]");
+  const place = dialog?.querySelector<HTMLElement>("[data-lightbox-place]");
+  const close = dialog?.querySelector<HTMLButtonElement>("[data-lightbox-close]");
+
+  if (dialog && image && place && close) {
+    let trigger: HTMLAnchorElement | undefined;
+
+    document.addEventListener("click", (event) => {
+      if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+      const card = target.closest<HTMLAnchorElement>("a[data-photo]");
+      if (!card || dialog.open) return;
+      event.preventDefault();
+      trigger = card;
+      const name = card.dataset.place ?? "";
+      image.src = card.href;
+      image.alt = name;
+      place.textContent = name;
+      dialog.showModal();
+      close.focus();
+    });
+
+    dialog.addEventListener("click", (event) => {
+      if (event.target === dialog) dialog.close();
+    });
+
+    close.addEventListener("click", () => dialog.close());
+
+    dialog.addEventListener("close", () => {
+      image.removeAttribute("src");
+      image.alt = "";
+      trigger?.focus();
+    });
+  }
+</script>

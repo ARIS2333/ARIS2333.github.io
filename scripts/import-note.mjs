@@ -65,6 +65,7 @@ const title = hadTitle ? data.title.trim() : inferredTitle || "TODO: add title";
 const description = hadDescription ? data.description.trim() : "TODO: add a short summary";
 const date = hadDate ? normalizeDate(data.date) : "2026-01-01";
 const tags = Array.isArray(data.tags) ? data.tags.map((tag) => String(tag).trim()).filter(Boolean) : [];
+const category = typeof data.category === "string" ? data.category.trim() : "";
 
 mkdirSync(destDir, { recursive: true });
 copyImages(body, sourceDir, destDir);
@@ -75,6 +76,7 @@ const frontmatter = [
   titleLine(title, hadTitle, inferredTitle),
   hadDescription ? `description: ${JSON.stringify(description)}` : 'description: "TODO: add a short summary"',
   hadDate ? `date: ${date}` : `date: ${date} # TODO: set the original date`,
+  ...(category ? [`category: ${JSON.stringify(category)}`] : []),
   tags.length > 0 ? `tags: [${tags.map((tag) => JSON.stringify(tag)).join(", ")}]` : "tags: []",
   "draft: true",
   ...(data.projectId ? [`projectId: ${JSON.stringify(String(data.projectId))}`] : []),

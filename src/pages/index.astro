@@ -1,98 +1,426 @@
 ---
+import { existsSync } from "node:fs";
+import { join } from "node:path";
+import { Image } from "astro:assets";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { site } from "../config/site";
-import { getFeaturedProjects, getNews } from "../lib/content";
-import { formatISODate, formatNewsDate } from "../lib/format";
-import { affiliationLine, cvHref, emailAddress, portrait, seekingText, socialLinks } from "../lib/profile";
+import { getNews, getPhotographs } from "../lib/content";
+import { getFeaturedPhotos } from "../lib/gallery";
+import Lightbox from "../components/Lightbox.astro";
+import PhotoGrid from "../components/PhotoGrid.astro";
+import { formatISODate, formatNewsDate, paragraphs } from "../lib/format";
+import { affiliationLine, cvHref, emailAddress, portrait, seekingFacts, socialLinks } from "../lib/profile";
 
-const featured = await getFeaturedProjects();
-const latest = (await getNews())[0];
+const latestNews = (await getNews()).slice(0, 2);
+const photographs = (await getPhotographs()).filter((photo) =>
+  existsSync(join(process.cwd(), "public", photo.data.src.replace(/^\//, ""))),
+);
+const featured = getFeaturedPhotos();
 const cv = cvHref();
 const email = emailAddress();
 const socials = socialLinks();
+const linkedin = socials.find((item) => item.key === "linkedin");
+const scholar = socials.find((item) => item.key === "scholar");
 const affiliation = affiliationLine();
-const seeking = seekingText();
+const seeking = seekingFacts();
 const photo = portrait();
+const intro = paragraphs(site.bio);
+const focusLines = site.researchFocus
+  .map((line) => line.trim().replaceAll("–", "–\u2060"))
+  .filter(Boolean);
 ---
 
 <BaseLayout
   title={site.name}
-  description="CS PhD student seeking an internship. Research focus, selected work, and the latest update."
+  description={intro[0] || affiliation || site.name}
 >
-  <div class="shell">
-    <section class="hero" aria-label="Introduction">
-      <h1 class="name">{site.name}</h1>
-      {site.researchFocus.trim() && <p class="research">{site.researchFocus}</p>}
-      {
-        seeking && (
-          <div class="seeking">
-            <p class="seeking-kicker">Seeking internship</p>
-            <p class="seeking-line">{seeking}</p>
+  <div class="home">
+    <section class="identity" aria-labelledby="profile-name">
+        <div class="identity-heading">
+          {
+            photo.image ? (
+              <Image
+                class="portrait"
+                src={photo.image}
+                alt={photo.alt}
+                width={320}
+                widths={[128, 256, 320, 640]}
+                sizes="(max-width: 720px) 6rem, 18.25rem"
+                format="webp"
+                loading="eager"
+                fetchpriority="high"
+              />
+            ) : photo.src.startsWith("/") ? (
+              <img class="portrait" src={photo.src} alt={photo.alt} width="1024" height="847" />
+            ) : null
+          }
+          <div>
+            <h1 class="name" id="profile-name">{site.name}</h1>
+            {affiliation && <p class="affiliation">{affiliation}</p>}
           </div>
-        )
-      }
-      {affiliation && <p class="affiliation">{affiliation}</p>}
-      {site.bio.trim() && <p class="bio">{site.bio}</p>}
-      <img class="portrait" src={photo.src} alt={photo.alt} width="320" height="400" />
-      {
-        (cv || email) && (
-          <div class="actions">
-            {cv && (
-              <a class="button" href={cv} download>
-                Download CV
-              </a>
-            )}
-            {email && (
-              <a class="button button-quiet" href={`mailto:${email}`}>
-                Email
-              </a>
-            )}
-          </div>
-        )
-      }
-      {
-        socials.length > 0 && (
-          <p class="social">
-            {socials.map((item) => (
-              <a href={item.href}>{item.label}</a>
-            ))}
-          </p>
-        )
-      }
-    </section>
-
-    <section class="section" aria-labelledby="selected-work">
-      <h2 id="selected-work">Selected Work</h2>
-      <ol class="feature-list">
+        </div>
         {
-          featured.map((project) => (
-            <li>
-              <h3>
-                <a href={`/work/${project.id}`}>{project.data.title}</a>
-              </h3>
-              <p>{project.data.summary}</p>
-              <a class="more" href={`/work/${project.id}`}>
-                Read the project
-              </a>
-            </li>
-          ))
+          focusLines.length > 0 && (
+            <ul class="research">
+              {focusLines.map((line) => (
+                <li>{line}</li>
+              ))}
+            </ul>
+          )
         }
-      </ol>
-    </section>
+        {
+          seeking && (
+            <div class="seeking">
+              <span class="seeking-kicker">Seeking internship</span>
+              <dl class="seeking-facts">
+                {seeking.roles && (
+                  <div>
+                    <dt>Role</dt>
+                    <dd>{seeking.roles}</dd>
+                  </div>
+                )}
+                {seeking.areas && (
+                  <div>
+                    <dt>Area</dt>
+                    <dd>{seeking.areas}</dd>
+                  </div>
+                )}
+                {seeking.when && (
+                  <div>
+                    <dt>When</dt>
+                    <dd>{seeking.when}</dd>
+                  </div>
+                )}
+              </dl>
+            </div>
+          )
+        }
+        {
+          (cv || email || scholar || linkedin) && (
+            <div class="contact">
+              {cv && (
+                <a class="button" href={cv} download>
+                  Download CV
+                </a>
+              )}
+              {(email || scholar || linkedin) && (
+                <div class="contact-links">
+                  {
+                    email && (
+                      <a class="icon-link" href={`mailto:${email}`}>
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                          <path
+                            fill="currentColor"
+                            d="M2 4.5h20v15H2v-15zm2 2v.6l8 5.3 8-5.3V6.5H4zm16 2.2-8 5.3-8-5.3V17.5h16V8.7z"
+                          />
+                        </svg>
+                        <span>{email}</span>
+                      </a>
+                    )
+                  }
+                  {
+                    scholar && (
+                      <a class="icon-link" href={scholar.href}>
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                          <path
+                            fill="currentColor"
+                            d="M12 3 1 9l11 6 9-4.91V17h2V9L12 3zM6.5 13.2V16c0 1.6 2.5 2.9 5.5 2.9s5.5-1.3 5.5-2.9v-2.8L12 16.4l-5.5-3.2z"
+                          />
+                        </svg>
+                        <span>Google Scholar</span>
+                      </a>
+                    )
+                  }
+                  {
+                    linkedin && (
+                      <a class="icon-link" href={linkedin.href}>
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                          <path
+                            fill="currentColor"
+                            d="M4.7 3.3A2.2 2.2 0 1 1 2.5 5.5a2.2 2.2 0 0 1 2.2-2.2zM3 8.4h3.4V21H3V8.4zm5.6 0H12v1.7h.1c.5-.9 1.7-1.9 3.5-1.9 3.7 0 4.4 2.4 4.4 5.6V21h-3.4v-6.3c0-1.5 0-3.4-2.1-3.4s-2.4 1.6-2.4 3.3V21H8.6V8.4z"
+                          />
+                        </svg>
+                        <span>LinkedIn</span>
+                      </a>
+                    )
+                  }
+                </div>
+              )}
+            </div>
+          )
+        }
+      </section>
 
-    {
-      latest && (
-        <section class="section" aria-labelledby="latest-news">
-          <h2 id="latest-news">Latest News</h2>
-          <article class="news-lead">
-            <time datetime={formatISODate(latest.data.date)}>{formatNewsDate(latest.data.date)}</time>
-            <p>{latest.data.content}</p>
-          </article>
-          <a class="section-link" href="/news">
-            All news →
+      <div class="home-main">
+        {
+          intro.length > 0 && (
+            <section class="about" aria-labelledby="about">
+              <div class="section-head">
+                <h2 id="about">About</h2>
+              </div>
+              <div class="intro-copy">
+                {intro.map((paragraph) => (
+                  <p>{paragraph}</p>
+                ))}
+              </div>
+            </section>
+          )
+        }
+
+        <nav class="page-jumps" aria-label="Sections">
+          <a href="/publications">
+            <span class="jump-kicker">Publications</span>
+            <span class="jump-note">Check my papers.</span>
           </a>
-        </section>
-      )
-    }
+          <a href="/experience">
+            <span class="jump-kicker">Experience</span>
+            <span class="jump-note">Degrees and internships.</span>
+          </a>
+          <a href="/news">
+            <span class="jump-kicker">News</span>
+            <span class="jump-note">Papers and other updates.</span>
+          </a>
+          <a href="/blog">
+            <span class="jump-kicker">Blog</span>
+            <span class="jump-note">Technical notes on blockchain and smart contracts.</span>
+          </a>
+        </nav>
+
+        {
+          latestNews.length > 0 && (
+            <section class="home-news" aria-labelledby="latest-news">
+              <div class="section-head">
+                <h2 id="latest-news">Latest News</h2>
+                <a href="/news">All news →</a>
+              </div>
+              <ul class="news-quiet-list">
+                {
+                  latestNews.map((item) => (
+                    <li>
+                      <time datetime={formatISODate(item.data.date)}>{formatNewsDate(item.data.date)}</time>
+                      <span class="news-label">{item.data.label}</span>
+                      <span>
+                        {item.data.content}
+                        {item.data.href && (
+                          <>
+                            {" "}
+                            <a href={item.data.href}>{item.data.linkLabel || "Link"}</a>
+                          </>
+                        )}
+                      </span>
+                    </li>
+                  ))
+                }
+              </ul>
+            </section>
+          )
+        }
+
+        {
+          photographs.length > 0 && (
+            <section class="photographs" aria-labelledby="photographs">
+              <div class="section-head">
+                <h2 id="photographs">Photographs</h2>
+              </div>
+              <button type="button" class="photo-stage" data-photo-stage aria-label="Show the next photograph">
+                {
+                  photographs.map((photo, index) => (
+                    <figure class={index === 0 ? "is-current" : undefined} data-caption={photo.data.year ? `${photo.data.caption}, ${photo.data.year}` : photo.data.caption}>
+                      <img src={photo.data.src} alt={photo.data.alt} />
+                    </figure>
+                  ))
+                }
+              </button>
+              <p class="photo-caption" data-photo-caption>
+                {photographs[0].data.year
+                  ? `${photographs[0].data.caption}, ${photographs[0].data.year}`
+                  : photographs[0].data.caption}
+              </p>
+              <script>
+                const stage = document.querySelector<HTMLButtonElement>("[data-photo-stage]");
+                const caption = document.querySelector<HTMLElement>("[data-photo-caption]");
+                const slides = stage ? [...stage.querySelectorAll<HTMLElement>("figure")] : [];
+                const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+                const dwell = 4200;
+                const maxWidth = 576;
+                const maxHeight = 448;
+                let index = 0;
+                let busy = false;
+                let pending = false;
+                let resizePending = false;
+                let timer = 0;
+
+                function writeCaption() {
+                  if (!caption) return;
+                  caption.textContent = slides[index]?.dataset.caption ?? "";
+                }
+
+                function limits() {
+                  const parent = stage?.parentElement?.clientWidth ?? maxWidth;
+                  return { maxW: Math.max(1, Math.min(parent - 2, maxWidth)), maxH: maxHeight };
+                }
+
+                function measure(img: HTMLImageElement) {
+                  const { maxW, maxH } = limits();
+                  const nw = img.naturalWidth;
+                  const nh = img.naturalHeight;
+                  if (!nw || !nh) return { w: Math.min(maxW, maxWidth), h: Math.round(Math.min(maxW, maxWidth) * 0.56) };
+                  const fit = Math.min(maxW / nw, maxH / nh);
+                  return { w: Math.max(1, Math.round(nw * fit)), h: Math.max(1, Math.round(nh * fit)) };
+                }
+
+                function layout(figure: HTMLElement) {
+                  const img = figure.querySelector("img");
+                  const size = img ? measure(img) : { w: maxWidth, h: 160 };
+                  figure.style.width = `${size.w}px`;
+                  figure.style.height = `${size.h}px`;
+                  return size;
+                }
+
+                function fitStage(size: { w: number; h: number }, animate: boolean) {
+                  if (!stage) return;
+                  if (!animate) stage.style.transition = "none";
+                  stage.style.width = `${size.w}px`;
+                  stage.style.height = `${size.h}px`;
+                  if (!animate) {
+                    stage.getBoundingClientRect();
+                    stage.style.transition = "";
+                  }
+                }
+
+                function restage(animate: boolean) {
+                  slides.forEach((figure) => layout(figure));
+                  const current = slides[index];
+                  if (!current) return;
+                  fitStage(layout(current), animate && !reduced);
+                }
+
+                function finish(current: HTMLElement, incoming: HTMLElement, next: number) {
+                  current.style.transition = "none";
+                  incoming.style.transition = "none";
+                  current.classList.remove("is-current", "is-leaving");
+                  incoming.classList.remove("is-incoming");
+                  incoming.classList.add("is-current");
+                  current.style.transform = "";
+                  incoming.style.transform = "";
+                  current.getBoundingClientRect();
+                  current.style.transition = "";
+                  incoming.style.transition = "";
+                  index = next;
+                  busy = false;
+                  writeCaption();
+                  if (resizePending) {
+                    resizePending = false;
+                    restage(false);
+                  }
+                  if (pending) {
+                    pending = false;
+                    advance();
+                  }
+                }
+
+                function show(next: number) {
+                  if (!stage || slides.length < 2 || next === index) return;
+                  const current = slides[index];
+                  const incoming = slides[next];
+                  if (!current || !incoming) return;
+                  const currentSize = layout(current);
+                  const nextSize = layout(incoming);
+                  if (reduced) {
+                    current.classList.remove("is-current");
+                    incoming.classList.add("is-current");
+                    index = next;
+                    fitStage(nextSize, false);
+                    writeCaption();
+                    return;
+                  }
+                  busy = true;
+                  incoming.classList.add("is-incoming");
+                  incoming.style.transition = "none";
+                  incoming.style.transform = `translateX(${-nextSize.w}px)`;
+                  incoming.getBoundingClientRect();
+                  incoming.style.transition = "";
+                  current.classList.add("is-leaving");
+                  current.style.transform = `translateX(${Math.max(currentSize.w, nextSize.w)}px)`;
+                  incoming.style.transform = "translateX(0)";
+                  fitStage(nextSize, true);
+                  const done = (event: TransitionEvent) => {
+                    if (event.target !== incoming || event.propertyName !== "transform") return;
+                    incoming.removeEventListener("transitionend", done);
+                    finish(current, incoming, next);
+                  };
+                  incoming.addEventListener("transitionend", done);
+                }
+
+                function arm() {
+                  window.clearTimeout(timer);
+                  if (reduced || slides.length < 2 || document.hidden) return;
+                  timer = window.setTimeout(() => advance(), dwell);
+                }
+
+                function advance() {
+                  if (slides.length < 2) return;
+                  if (busy) {
+                    pending = true;
+                    return;
+                  }
+                  show((index + 1) % slides.length);
+                  arm();
+                }
+
+                function whenImagesReady() {
+                  const images = slides
+                    .map((figure) => figure.querySelector("img"))
+                    .filter((img): img is HTMLImageElement => img instanceof HTMLImageElement);
+                  const pendingImages = images.filter((img) => !(img.complete && img.naturalWidth));
+                  if (pendingImages.length === 0) {
+                    restage(false);
+                    return;
+                  }
+                  let left = pendingImages.length;
+                  pendingImages.forEach((img) => {
+                    const done = () => {
+                      left -= 1;
+                      if (left === 0) restage(false);
+                    };
+                    img.addEventListener("load", done, { once: true });
+                    img.addEventListener("error", done, { once: true });
+                  });
+                }
+
+                if (stage && slides.length > 0) {
+                  whenImagesReady();
+                  window.addEventListener("resize", () => {
+                    if (busy) {
+                      resizePending = true;
+                      return;
+                    }
+                    restage(false);
+                  });
+                }
+
+                if (stage && slides.length > 1) {
+                  stage.addEventListener("click", () => advance());
+                  document.addEventListener("visibilitychange", () => arm());
+                  arm();
+                }
+              </script>
+            </section>
+          )
+        }
+
+        {
+          featured.length > 0 && (
+            <section class="gallery" aria-labelledby="gallery">
+              <div class="section-head">
+                <h2 id="gallery">Featured Photographs</h2>
+                <a href="/gallery">All photographs →</a>
+              </div>
+              <PhotoGrid photos={featured} featured />
+            </section>
+          )
+        }
+      </div>
   </div>
+  <Lightbox />
 </BaseLayout>

@@ -1,0 +1,24 @@
+---
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import BlogBrowser from "../../../../components/BlogBrowser.astro";
+import { getBlogSections, sortPostsByDate } from "../../../../lib/content";
+
+export async function getStaticPaths() {
+  const sections = await getBlogSections();
+  return sections.map((section) => ({
+    params: { slug: section.slug },
+    props: { name: section.name },
+  }));
+}
+
+const { name } = Astro.props;
+const slug = Astro.params.slug ?? "";
+const sections = await getBlogSections();
+const section = sections.find((item) => item.slug === slug);
+if (!section) throw new Error(`Missing blog section "${slug}".`);
+const posts = sortPostsByDate(section.posts, "asc");
+---
+
+<BaseLayout title={`${name} · Blog`} description={`${posts.length} notes in ${name}.`}>
+  <BlogBrowser sections={sections} posts={posts} activeSlug={slug} activeName={name} />
+</BaseLayout>

@@ -1,53 +1,100 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import RelatedList from "../components/RelatedList.astro";
-import { getExperience } from "../lib/content";
-import { formatRange } from "../lib/format";
+import { getEducation, getExperience } from "../lib/content";
+import { formatRange, formatYearRange, paragraphs } from "../lib/format";
 
-const entries = await getExperience();
+const jobs = await getExperience();
+const schools = await getEducation();
+
+const recency = (end?: Date) => (end ? end.getTime() : Number.POSITIVE_INFINITY);
+
+const internships = [...jobs].sort(
+  (a, b) =>
+    recency(b.entry.data.end) - recency(a.entry.data.end) ||
+    b.entry.data.start.getTime() - a.entry.data.start.getTime(),
+);
 ---
 
 <BaseLayout
   title="Experience"
-  description="Internships and research roles, with the work I owned and links to related projects or notes."
+  description="Education and internships, from newest to oldest."
 >
-  <div class="shell">
+  <div class="experience-page">
     <header class="page-header">
       <h1>Experience</h1>
-      <p class="lede">Roles are listed from newest to oldest.</p>
     </header>
-    <div class="record-list">
-      {
-        entries.map(({ entry, relatedProjects, relatedNotes }) => (
-          <article class="record">
-            <h2>{entry.data.organization}</h2>
-            {entry.data.team && <p class="team">{entry.data.team}</p>}
-            <div class="role-row">
-              <h3>{entry.data.role}</h3>
-              <p class="dates">{formatRange(entry.data.start, entry.data.end)}</p>
-            </div>
-            <ul>
-              {entry.data.highlights.map((highlight) => (
-                <li>{highlight}</li>
-              ))}
-            </ul>
-            <RelatedList
-              items={[
-                ...relatedProjects.map((project) => ({
-                  kind: "Project",
-                  href: `/work/${project.id}`,
-                  title: project.data.title,
-                })),
-                ...relatedNotes.map((note) => ({
-                  kind: "Note",
-                  href: `/blog/${note.id}`,
-                  title: note.data.title,
-                })),
-              ]}
-            />
-          </article>
-        ))
-      }
+    <div class="experience-split">
+      <section class="experience-pane" aria-labelledby="education-pane">
+        <h2 id="education-pane" class="pane-head">Education</h2>
+        <div class="record-list">
+          {
+            schools.map((entry) => (
+              <article class="record">
+                <h3>{entry.data.school}</h3>
+                <div class="role-row">
+                  <p class="role-line">
+                    {entry.data.degree}, {entry.data.field}
+                  </p>
+                  <p class="dates">
+                    {entry.data.precision === "year"
+                      ? formatYearRange(entry.data.start, entry.data.end)
+                      : formatRange(entry.data.start, entry.data.end)}
+                  </p>
+                </div>
+                {entry.data.detail && <p class="team">{entry.data.detail}</p>}
+                {(entry.data.advisor || entry.data.lab) && (
+                  <p class="meta-line">
+                    {entry.data.advisor && <>Advisor: {entry.data.advisor}</>}
+                    {entry.data.advisor && entry.data.lab && " · "}
+                    {entry.data.lab}
+                  </p>
+                )}
+                {entry.data.note &&
+                  paragraphs(entry.data.note).map((paragraph) => <p class="note">{paragraph}</p>)}
+                {(entry.data.thesis || entry.data.thesisUrl) && (
+                  <p class="meta-line">
+                    {entry.data.thesisUrl ? (
+                      <a href={entry.data.thesisUrl}>{entry.data.thesis || "Thesis"}</a>
+                    ) : (
+                      entry.data.thesis
+                    )}
+                  </p>
+                )}
+              </article>
+            ))
+          }
+        </div>
+      </section>
+      <section class="experience-pane" aria-labelledby="intern-pane">
+        <h2 id="intern-pane" class="pane-head">Internships</h2>
+        <div class="record-list">
+          {
+            internships.map((item) => (
+              <article class="record">
+                <h3>{item.entry.data.organization}</h3>
+                {item.entry.data.team && <p class="team">{item.entry.data.team}</p>}
+                <div class="role-row">
+                  <p class="role-line">{item.entry.data.role}</p>
+                  <p class="dates">{formatRange(item.entry.data.start, item.entry.data.end)}</p>
+                </div>
+                <ul>
+                  {item.entry.data.highlights.map((highlight) => (
+                    <li>{highlight}</li>
+                  ))}
+                </ul>
+                <RelatedList
+                  items={item.relatedNotes.map((note) => ({
+                    kind: "Note",
+                    href: `/blog/${note.id}`,
+                    title: note.data.title,
+                  }))}
+                />
+              </article>
+            ))
+          }
+        </div>
+      </section>
     </div>
   </div>
 </BaseLayout>

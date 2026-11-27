@@ -1,0 +1,21 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import BlogBrowser from "../../../components/BlogBrowser.astro";
+import { getBlogSections, getBlogTags, noteCount, sortPostsByDate } from "../../../lib/content";
+
+export async function getStaticPaths() {
+  const tags = await getBlogTags();
+  return tags.map((tag) => ({
+    params: { slug: tag.slug },
+    props: { tag },
+  }));
+}
+
+const { tag } = Astro.props;
+const sections = await getBlogSections();
+const posts = sortPostsByDate(tag.posts, "asc");
+---
+
+<BaseLayout title={`${tag.name} · Blog`} description={`${noteCount(posts.length)} tagged ${tag.name}.`}>
+  <BlogBrowser sections={sections} posts={posts} activeSlug={null} activeName={tag.name} showBack />
+</BaseLayout>

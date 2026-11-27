@@ -1,0 +1,144 @@
+---
+import NoteList from "./NoteList.astro";
+import { sectionHref, type getBlogSections } from "../lib/content";
+import type { CollectionEntry } from "astro:content";
+
+interface Props {
+  sections: Awaited<ReturnType<typeof getBlogSections>>;
+  posts: CollectionEntry<"blog">[];
+  activeSlug: string | null;
+  activeName: string;
+  showBack?: boolean;
+}
+
+const { sections, posts, activeSlug, activeName, showBack = false } = Astro.props;
+---
+
+<div class="blog-browser">
+  <aside class="blog-filter">
+    <h1>Blog</h1>
+    <p class="blog-filter-note">
+      Most of my work comes from internal partner projects at Bybit. Those notes stay private. The notes here are technical documents I wrote on open-source projects.
+    </p>
+    <nav aria-label="Sections">
+      <a href="/blog" aria-current={!showBack && activeSlug === null ? "page" : undefined}>
+        <span>All</span>
+        <span class="count">{sections.reduce((sum, section) => sum + section.posts.length, 0)}</span>
+      </a>
+      {
+        sections.map((section) => (
+          <a href={sectionHref(section.name)} aria-current={section.slug === activeSlug ? "page" : undefined}>
+            <span>{section.name}</span>
+            <span class="count">{section.posts.length}</span>
+          </a>
+        ))
+      }
+    </nav>
+  </aside>
+  <section class="blog-results" aria-labelledby="blog-results-title">
+    <header class="blog-results-head">
+      {showBack && (
+        <p class="back">
+          <a href="/blog" data-back>Back</a>
+        </p>
+      )}
+      <h2 id="blog-results-title">{activeName}</h2>
+      <div class="blog-sort">
+        <span id="blog-sort-label">Sort by time</span>
+        <div class="blog-sort-menu">
+          <button type="button" class="blog-sort-trigger" aria-expanded="false" aria-controls="blog-sort-list">
+            <span data-sort-current>Oldest first</span>
+          </button>
+          <div id="blog-sort-list" class="blog-sort-list" role="listbox" aria-labelledby="blog-sort-label" hidden>
+            <button type="button" role="option" data-sort="asc" aria-selected="true">Oldest first</button>
+            <button type="button" role="option" data-sort="desc" aria-selected="false">Newest first</button>
+          </div>
+        </div>
+      </div>
+    </header>
+    <div class="blog-results-list">
+      <NoteList posts={posts} showSection={activeSlug === null} />
+    </div>
+  </section>
+</div>
+
+<script>
+  const storageKey = "blog-sort";
+
+  function applyBlogSort(direction: "asc" | "desc") {
+    const list = document.querySelector(".blog-results-list .post-list");
+    if (!list) return;
+    const items = [...list.children] as HTMLElement[];
+    items.sort((a, b) => {
+      const at = a.querySelector("time")?.getAttribute("datetime") ?? "";
+      const bt = b.querySelector("time")?.getAttribute("datetime") ?? "";
+      return direction === "desc" ? bt.localeCompare(at) : at.localeCompare(bt);
+    });
+    for (const item of items) list.appendChild(item);
+  }
+
+  const menu = document.querySelector<HTMLElement>(".blog-sort-menu");
+  const trigger = menu?.querySelector<HTMLButtonElement>(".blog-sort-trigger");
+  const listbox = menu?.querySelector<HTMLElement>(".blog-sort-list");
+  const current = menu?.querySelector<HTMLElement>("[data-sort-current]");
+  const options = menu ? [...menu.querySelectorAll<HTMLButtonElement>("[data-sort]")] : [];
+
+  function setSortOpen(open: boolean) {
+    if (!menu || !trigger || !listbox) return;
+    menu.classList.toggle("is-open", open);
+    trigger.setAttribute("aria-expanded", String(open));
+    listbox.hidden = !open;
+  }
+
+  function chooseSort(direction: "asc" | "desc") {
+    if (!current) return;
+    applyBlogSort(direction);
+    current.textContent = direction === "desc" ? "Newest first" : "Oldest first";
+    for (const option of options) {
+      option.setAttribute("aria-selected", String(option.dataset.sort === direction));
+    }
+    try {
+      sessionStorage.setItem(storageKey, direction);
+    } catch {
+      // Sorting still applies for this page when storage is unavailable.
+    }
+  }
+
+  if (menu && trigger && listbox && current) {
+    let stored: "asc" | "desc" = "asc";
+    try {
+      stored = sessionStorage.getItem(storageKey) === "desc" ? "desc" : "asc";
+    } catch {
+      stored = "asc";
+    }
+    if (stored === "desc") chooseSort("desc");
+
+    trigger.addEventListener("click", () => {
+      setSortOpen(trigger.getAttribute("aria-expanded") !== "true");
+    });
+
+    for (const option of options) {
+      option.addEventListener("click", () => {
+        chooseSort(option.dataset.sort === "desc" ? "desc" : "asc");
+        setSortOpen(false);
+        document.querySelector(".blog-results-list")?.scrollTo(0, 0);
+      });
+    }
+
+    document.addEventListener("click", (event) => {
+      if (!menu.contains(event.target as Node)) setSortOpen(false);
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") setSortOpen(false);
+    });
+  }
+
+  for (const link of document.querySelectorAll<HTMLAnchorElement>("[data-back]")) {
+    link.addEventListener("click", (event) => {
+      if (!document.referrer) return;
+      event.preventDefault();
+      history.back();
+    });
+  }
+</script>

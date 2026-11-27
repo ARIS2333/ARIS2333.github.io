@@ -1,0 +1,15 @@
+title: "CodeFlow: LLM-Generated Flowchart Feedback for Programming Students"
+authors:
+  - Kehao Zheng
+  - Yang Shi
+venue: SIGCSE TS
+year: 2026
+month: 2
+summary: "Text explanations of buggy code are hard to map onto program structure, and flowchart tools still have to be drawn by hand. CodeFlow is a web tool that uses a large language model to turn a student's own code into a flowchart, marks syntax and logic errors on the chart, and shows a reference flowchart that follows their approach without giving away the full solution. I am the first author. A pilot at Utah State University tried it with CS1 Java."
+tags:
+  - Large language models
+  - CS education
+  - Program visualization
+  - Debugging
+links:
+  paper: https://dl.acm.org/doi/abs/10.1145/3770761.3777175

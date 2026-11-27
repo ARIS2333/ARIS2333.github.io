@@ -1,176 +1,245 @@
-# CV website
+# Kehao Zheng
 
-面向实习求职的多页个人网站。技术栈是 Astro 与 TypeScript，输出静态 HTML。界面是英文。当前姓名、学校、论文、经历和笔记都是 **Sample 占位**，用来演示版式和内容结构，不是真实履历。投递前请按文末清单替换。
+English personal site. Astro 5 and TypeScript, built to static HTML.
 
-## 本地命令
+[English](#english) · [中文](#中文)
+
+## English
+
+### Setup
+
+Node.js 20 or newer.
+
+```bash
+npm install
+npm run dev       # http://localhost:4321
+npm run check     # typecheck
+npm run build     # writes dist/
+npm run preview   # serves dist/
+```
+
+`npm run dev` reloads as you edit. `npm run preview` serves the last build and does not watch the source. After adding photos or notes, run `npm run build` before previewing.
+
+Before a public deploy, set `url` in `src/config/site.ts` to the real domain and build again. The sitemap and canonical links use that value. Upload `dist/` to any static host.
+
+### Pages
+
+| Path | Page |
+| --- | --- |
+| `/` | Profile, about, news, featured photographs |
+| `/publications` | Papers, newest year first |
+| `/experience` | Education and the Bybit internship |
+| `/blog` | Notes, filtered by section |
+| `/blog/section/[slug]` | One section |
+| `/blog/tag/[slug]` | One tag |
+| `/blog/[slug]` | One note |
+| `/news` | All news |
+| `/gallery` | All photographs, filtered by place |
+
+`/education` redirects to `/experience`. `/work` redirects to `/`.
+
+### Project structure
+
+```text
+src/config/site.ts          name, about, links, domain
+src/content.config.ts       required fields for each content type
+src/pages/                  one route per file
+src/layouts/                page shell
+src/components/             header, blog, photo grid, lightbox
+src/lib/                    content helpers and the photo scanner
+src/styles/global.css       layout and type
+src/content/                text content (YAML and Markdown)
+src/assets/                 portrait and gallery originals
+public/                     files copied into the site as-is
+dist/                       build output, not committed
+```
+
+### Where to add something
+
+Profile, about, email, Scholar, LinkedIn, and the domain live in `src/config/site.ts`. `bio` is the About text. A blank line starts a new paragraph. An empty string hides that link.
+
+| Add | Put it here |
+| --- | --- |
+| Portrait | Replace `src/assets/portrait.jpg`. `portrait` in `site.ts` stays `"portrait.jpg"`. |
+| CV PDF | `public/cv/your-cv.pdf`, then set `cv` to `"/cv/your-cv.pdf"`. Leave `cv` empty to hide the link. |
+| Gallery photo | `src/assets/photographs/<Place>/filename.jpg`. The folder name, including a flag if you use one, is the place label. A filename containing `featured` or `Featured` is also shown on the homepage. |
+| Blog note | `src/content/blog/<slug>/index.md`, with images in that folder's `images/`. |
+| Paper | `src/content/publications/<id>.yaml` |
+| Job or internship | `src/content/experience/<id>.yaml` |
+| School | `src/content/education/<id>.yaml` |
+| News item | `src/content/news/<id>.yaml` |
+| Favicon | `public/favicon.svg` |
+
+Gallery photos are resized at build time. Commit a JPEG whose long edge is about 2400 pixels. Keep the camera original outside this repo. The build makes WebP thumbnails and a lightbox image at most 1800 pixels on the long edge. Rebuild after adding or renaming photos.
+
+A paper title becomes a link only when `links.paper` is set. Omit it when there is no public PDF. `links.code` still renders as a Code link.
+
+```yaml
+title: "Paper title"
+authors:
+  - Kehao Zheng
+  - Coauthor Name
+venue: SIGCSE TS
+year: 2026
+month: 2
+summary: "One short paragraph."
+tags:
+  - CS education
+links:
+  paper: https://example.com/paper
+```
+
+`month` is only used to sort papers in the same year. A name in `authors` that matches `nameAliases` is shown in bold. `status: accepted` prints "Just accepted". `representative: true` prints "Representative".
+
+Blog notes stay off the site until `draft: false`. `category` is the section in the left column. `tags` get their own pages. Put images next to the note and use a relative path.
+
+```yaml
+---
+title: "Note title"
+description: "One sentence."
+date: 2026-03-06
+category: "Cross-Chain"
+tags:
+  - "Smart Contract"
+draft: false
+---
+
+![Diagram](./images/diagram.png)
+```
+
+`date` is `YYYY-MM-DD`. An old Markdown file can be imported with `npm run import-note -- path/to/note.md`. The import is a draft. Set `draft: false` after checking the title, description, date, and images.
+
+```yaml
+date: 2026-11-26
+label: Paper Accepted
+content: "One sentence about what happened."
+href: https://example.com/paper
+linkLabel: Paper
+```
+
+`href` and `linkLabel` are optional. The homepage shows the two newest items.
+
+Education and experience are YAML files. Omit `end` on a current role or degree. On education, `precision: year` shows years only.
+
+Do not put gallery photos in `public/photographs/`. Files there are copied into the site unchanged. `src/content/projects/` is not used by the current pages.
+
+## 中文
+
+英文个人网站。用 Astro 5 和 TypeScript 生成静态 HTML。
+
+### 本地运行
 
 需要 Node.js 20 或更新版本。
 
 ```bash
 npm install
-npm run dev       # 开发预览，默认 http://localhost:4321
+npm run dev       # http://localhost:4321
 npm run check     # 类型检查
-npm run build     # 生产构建，输出 dist/
-npm run preview   # 预览 dist/，默认 http://localhost:4321
+npm run build     # 输出到 dist/
+npm run preview   # 预览 dist/
 ```
 
-直接打开这些地址可以刷新和分享。主导航进入独立页面，不使用首页锚点。
+`npm run dev` 会跟着源文件刷新。`npm run preview` 只提供上一次构建的结果，不会监视源文件。加了照片或笔记之后，要先 `npm run build`，再预览。
+
+正式发布前，把 `src/config/site.ts` 里的 `url` 改成真实域名，然后重新构建。站点地图和 canonical 链接都用这个地址。把 `dist/` 上传到任意静态托管即可。
+
+### 页面
 
 | 路径 | 页面 |
 | --- | --- |
-| `/` | 个人介绍、求职意向、精选项目、最新一条公告 |
-| `/work` | 项目列表 |
-| `/work/[slug]` | 项目详情 |
-| `/publications` | 论文 |
-| `/experience` | 经历 |
-| `/education` | 教育 |
-| `/news` | 全部公告 |
-| `/blog` | 已发布笔记 |
-| `/blog/[slug]` | 笔记详情 |
+| `/` | 个人资料、About、新闻、精选照片 |
+| `/publications` | 论文，按年份从新到旧 |
+| `/experience` | 教育和 Bybit 实习 |
+| `/blog` | 笔记，可按分区筛选 |
+| `/blog/section/[slug]` | 某一个分区 |
+| `/blog/tag/[slug]` | 某一个标签 |
+| `/blog/[slug]` | 一篇笔记 |
+| `/news` | 全部新闻 |
+| `/gallery` | 全部照片，可按地点筛选 |
 
-News 不在页头主导航里。首页的 All news → 和页尾的 News 进入 `/news`。
+`/education` 会跳到 `/experience`。`/work` 会跳到首页。
 
-## 静态部署
+### 项目结构
 
-`npm run build` 之后把 `dist/` 交给任意静态托管即可，例如 Nginx、Cloudflare Pages 或 GitHub Pages。站点按域名根路径生成链接。
-
-发布前把 `src/config/site.ts` 里的 `url` 改成正式域名，再重新构建。站点地图和 canonical 链接都使用这个地址。
-
-## 内容放在哪里
-
-个人资料只改 `src/config/site.ts`：姓名、别名、学校、实验室、研究方向、一句介绍、求职状态、邮箱、头像、简历、GitHub / Google Scholar / LinkedIn、首页代表作和域名。字符串留空就会隐藏对应按钮或链接。没有头像路径时使用 `public/images/portrait.svg`。
-
-栏目资料：
-
-- `src/content/projects/` 项目。带图的项目用目录加 `index.md`，纯文字项目可以是单个 Markdown 文件。
-- `src/content/publications/` 论文，YAML。
-- `src/content/experience/` 经历，YAML。
-- `src/content/education/` 教育，YAML。
-- `src/content/news/` 公告，YAML。
-- `src/content/blog/` 笔记。公开文章必须写 `draft: false`。
-
-页面、布局、导航、样式和内容是分开的。颜色、字体、间距和页面宽度在 `src/styles/global.css` 顶部的变量里。
-
-必填字段由 `src/content.config.ts` 校验。缺字段时 `npm run check` 或 `npm run build` 会失败。
-
-## 替换头像和简历
-
-1. 把照片放到 `public/images/portrait.jpg`（或保留 SVG）。
-2. 把简历 PDF 放到 `public/cv/cv.pdf`。
-3. 修改 `src/config/site.ts`：
-
-```ts
-portrait: "/images/portrait.jpg",
-portraitAlt: "Portrait of Your Name",
-cv: "/cv/cv.pdf",
+```text
+src/config/site.ts          姓名、About、链接、域名
+src/content.config.ts       各类内容的必填字段
+src/pages/                  一个文件对应一个路由
+src/layouts/                页面外壳
+src/components/             导航、博客、照片网格、灯箱
+src/lib/                    内容辅助函数和照片扫描
+src/styles/global.css       排版和布局
+src/content/                文字内容（YAML 和 Markdown）
+src/assets/                 头像和相册原图
+public/                     原样复制进网站的文件
+dist/                       构建结果，不提交
 ```
 
-`portrait` 或 `cv` 设为 `""` 时，分别回退到中性占位图或隐藏 Download CV。邮箱留空则隐藏 Email。GitHub、Google Scholar、LinkedIn 只在对应字符串非空时显示。
+### 以后新内容放哪里
 
-## 更新求职状态
+姓名、About、邮箱、Scholar、LinkedIn 和域名都在 `src/config/site.ts`。`bio` 是首页 About。空一行就是新的一段。字符串留空，对应的链接就不会显示。
 
-仍在 `src/config/site.ts` 的 `seeking` 里改：
+| 要加的东西 | 放在这里 |
+| --- | --- |
+| 头像 | 替换 `src/assets/portrait.jpg`。`site.ts` 里的 `portrait` 保持 `"portrait.jpg"`。 |
+| 简历 PDF | 放到 `public/cv/your-cv.pdf`，再把 `cv` 设为 `"/cv/your-cv.pdf"`。`cv` 留空则不显示下载。 |
+| 相册照片 | `src/assets/photographs/<地点>/文件名.jpg`。文件夹名就是地点，可以带国旗 emoji。文件名里有 `featured` 或 `Featured` 的，也会出现在首页。 |
+| 博客笔记 | `src/content/blog/<slug>/index.md`，图片放在该目录的 `images/`。 |
+| 论文 | `src/content/publications/<id>.yaml` |
+| 工作或实习 | `src/content/experience/<id>.yaml` |
+| 学校 | `src/content/education/<id>.yaml` |
+| 新闻 | `src/content/news/<id>.yaml` |
+| 网站图标 | `public/favicon.svg` |
 
-```ts
-seeking: {
-  active: true,
-  roles: ["Research Intern"],
-  areas: ["ML systems"],
-  availability: "Summer 2027",
-},
-```
+相册照片在构建时会被缩小。提交进仓库的 JPEG 长边大约 2400 像素即可。相机原图留在仓库外面。构建会生成 WebP 缩略图，以及长边最多 1800 像素的大图。添加或重命名照片后需要重新构建。
 
-`active: false`，或角色、方向、时间都留空时，首页不显示求职意向。
-
-## 选择首页代表作
-
-`featuredWork` 写 1 或 2 个项目 id。id 是文件名去掉扩展名；如果文件是 `index.md`，id 是它所在的目录名。首页只读这些 id，文案来自项目文件的 `title` 和 `summary`。id 不存在，或数量不是 1–2 个，构建会失败。
-
-## 添加论文
-
-新建 `src/content/publications/my-paper.yaml`：
+论文标题只有在写了 `links.paper` 时才能点开。还没有公开 PDF 就不要写这个字段。`links.code` 仍会显示成 Code 链接。
 
 ```yaml
 title: "Paper title"
 authors:
-  - "Your Name"
-  - "Coauthor"
-venue: "Conference or journal"
+  - Kehao Zheng
+  - Coauthor Name
+venue: SIGCSE TS
 year: 2026
-month: 6
-representative: true
-projectId: my-project
+month: 2
+summary: "一段简短说明。"
+tags:
+  - CS education
 links:
-  paper: /papers/my-paper.pdf
-  code: "https://github.com/example/repo"
+  paper: https://example.com/paper
 ```
 
-- `month` 只用于同一年里的排序，页面上不单独显示。
-- `representative: true` 时标题后显示 Representative。
-- `authors` 里与 `nameAliases` 完全一致的名字会加粗。发表用的缩写写进 `nameAliases`。
-- `projectId` 指向项目 id。论文页显示 Project，项目页显示这篇论文的标题。论文标题、作者和会议只写在论文文件里。
-- `links.paper` 和 `links.code` 可以省略。没有的链接不会渲染。链接可以是站内路径 `/papers/file.pdf`，或 `https://` URL。
+`month` 只用来给同一年的论文排序。`authors` 里和 `nameAliases` 完全一致的名字会加粗。`status: accepted` 会显示 Just accepted。`representative: true` 会显示 Representative。
 
-## 导入带图片的旧笔记并发布
-
-旧 Markdown 可以没有 frontmatter。导入器保留正文，并按原来的相对路径复制图片。图片必须在笔记所在目录里面，例如 `./images/figure.png`。
-
-示例源文件在 `examples/legacy-note/internship-scratch-notes.md`。仓库里已经有一次导入结果：`src/content/blog/internship-scratch-notes/`，它是草稿。
-
-再次导入：
-
-```bash
-npm run import-note -- path/to/old-note.md
-npm run import-note -- path/to/old-note.md --slug my-note
-npm run import-note -- path/to/old-note.md --force
-```
-
-导入后的 frontmatter 类似：
+博客笔记在 `draft: false` 之前不会出现在网站上。`category` 是左侧的分区。`tags` 会各自生成页面。图片和笔记放在一起，用相对路径引用。
 
 ```yaml
 ---
-# Imported as a draft. Confirm the fields below, then set draft: false to publish.
-title: "Internship scratch notes" # TODO: confirm title
-description: "TODO: add a short summary"
-date: 2026-01-01 # TODO: set the original date
-tags: []
-draft: true
+title: "Note title"
+description: "一句话摘要。"
+date: 2026-03-06
+category: "Cross-Chain"
+tags:
+  - "Smart Contract"
+draft: false
 ---
+
+![Diagram](./images/diagram.png)
 ```
 
-处理步骤：
+`date` 的格式是 `YYYY-MM-DD`。旧 Markdown 可以用 `npm run import-note -- path/to/note.md` 导入。导入结果是草稿。核对标题、摘要、日期和图片之后，再把 `draft` 改成 `false`。
 
-1. 确认 `title`。如果正文开头还有一级标题，而页面模板已经显示标题，删掉正文里的那一行，避免重复。
-2. 把 `description` 写成一两句摘要。
-3. 把 `date` 改成原文日期，格式 `YYYY-MM-DD`。
-4. 按需要填写 `tags` 和 `projectId`。`projectId` 会让这篇笔记出现在对应项目页。
-5. 检查相对路径图片是否还在笔记目录里。
-6. 确认内容可以公开后，把 `draft: true` 改成 `draft: false`。
-7. 如果某段经历要链到这篇笔记，把笔记 id 写进该经历的 `noteIds`。
+```yaml
+date: 2026-11-26
+label: Paper Accepted
+content: "一句话说明发生了什么。"
+href: https://example.com/paper
+linkLabel: Paper
+```
 
-`draft` 不是 `false` 的笔记不会生成详情页，也不会出现在博客列表、项目关联、经历关联或站点地图里。直接访问草稿地址会得到 404。示例经历 `sample-org-2025.yaml` 同时引用了已发布笔记和这篇草稿，页面上只会看到已发布的那篇。删掉草稿文件时，也要从 `noteIds` 里去掉它的 id，否则构建会提示笔记不存在。
+`href` 和 `linkLabel` 可以不写。首页显示最新的两条。
 
-公开笔记的参考是 `src/content/blog/sample-internship-notes/`。它包含目录、代码块、表格、引用和相对路径图片。
+教育和经历都是 YAML。当前仍在进行的经历或学位，省略 `end`。教育经历写 `precision: year` 时，页面只显示年份。
 
-## 其他常见修改
-
-- 新项目：添加 Markdown，写上 `title`、`summary`、`problem`、`contribution`、`outcome` 和 `date`。详情页固定先回答 Problem、My contribution、Outcome，后面的章节写在正文里。没有图片或数字也可以。
-- 新经历：添加 YAML，包含机构、岗位、起止时间和若干条 `highlights`。`end` 省略时显示 Present。`projectIds` 和 `noteIds` 使用已有 id，页面显示项目名或文章标题。
-- 新教育经历：学校、学位、专业和时间必填。导师、实验室、学位论文和链接不写就不显示。
-- 新公告：`date` 和 `content` 必填。`href` 可选。首页只显示日期最新的一条。
-
-## 投递前需要替换的占位
-
-这些都是示例，不要原样发给招聘方：
-
-- `src/config/site.ts` 里的姓名、别名、学校、实验室、研究方向、介绍、求职岗位、技术方向、入职时间、邮箱、头像、简历和外部链接
-- `public/images/portrait.svg`、`public/cv/sample-cv.pdf`、`public/papers/sample-abstract.pdf`
-- `src/content/projects/` 下三篇 Sample 项目
-- `src/content/publications/` 下两篇 Sample 论文
-- `src/content/experience/` 下两段 Sample 经历
-- `src/content/education/` 下的 Sample University 与 Sample College
-- `src/content/news/` 下三条 Sample 公告
-- `src/content/blog/sample-internship-notes/`
-- 草稿 `src/content/blog/internship-scratch-notes/`，确认或删除
-
-替换后运行 `npm run check` 和 `npm run build`，再用 `npm run preview` 看一遍首页、代表作、论文、经历和准备公开的笔记。
+不要把相册照片放到 `public/photographs/`。那里的文件会原样复制进网站。`src/content/projects/` 目前没有对应页面。
