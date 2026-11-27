@@ -16,12 +16,35 @@ export type GalleryGroup = {
   photos: GalleryPhoto[];
 };
 
+function photoRank(file: string) {
+  const base = file.replace(/\.[^.]+$/, "");
+  const featured = base.toLowerCase().includes("featured");
+  const match = base.match(/^(\d+)_(\d+)/);
+  return {
+    featured,
+    index: match ? Number(match[1]) : Number.MAX_SAFE_INTEGER,
+    score: match ? Number(match[2]) : 0,
+  };
+}
+
+function comparePhotos(aPath: string, bPath: string) {
+  const [, , , aPlace, aFile] = aPath.split("/");
+  const [, , , bPlace, bFile] = bPath.split("/");
+  const a = photoRank(aFile);
+  const b = photoRank(bFile);
+  if (a.featured !== b.featured) return a.featured ? -1 : 1;
+  const byPlace = aPlace.localeCompare(bPlace, "en");
+  if (byPlace !== 0) return byPlace;
+  if (a.score !== b.score) return b.score - a.score;
+  return a.index - b.index;
+}
+
 export function getGalleryPhotos(): GalleryPhoto[] {
   return Object.keys(images)
-    .sort((a, b) => a.localeCompare(b, "en", { numeric: true }))
+    .sort(comparePhotos)
     .map((path) => {
       const [, , , place, file] = path.split("/");
-      return { place, image: images[path], featured: file.toLowerCase().includes("featured") };
+      return { place, image: images[path], featured: photoRank(file).featured };
     });
 }
 
@@ -30,11 +53,13 @@ export function getFeaturedPhotos(photos = getGalleryPhotos()) {
 }
 
 export function getGalleryGroups(photos = getGalleryPhotos()): GalleryGroup[] {
-  const groups: GalleryGroup[] = [];
+  const groups = new Map<string, GalleryPhoto[]>();
   for (const photo of photos) {
-    const current = groups.at(-1);
-    if (current?.place === photo.place) current.photos.push(photo);
-    else groups.push({ place: photo.place, photos: [photo] });
+    const current = groups.get(photo.place);
+    if (current) current.push(photo);
+    else groups.set(photo.place, [photo]);
   }
-  return groups;
+  return [...groups.entries()]
+    .sort(([a], [b]) => a.localeCompare(b, "en"))
+    .map(([place, group]) => ({ place, photos: group }));
 }

@@ -22,12 +22,32 @@ const groups = groupByYear(publications);
           <ol class="pub-list">
             {group.items.map((item) => {
               const paper = item.data.links?.paper;
+              const pdf = item.data.links?.pdf;
               const code = item.data.links?.code;
               return (
                 <li class="pub-card" id={item.id}>
-                  <h3 class="pub-title">
-                    {paper ? <a href={paper}>{item.data.title}</a> : item.data.title}
-                  </h3>
+                  <div class="pub-heading">
+                    <h3 class="pub-title">
+                      {paper ? (
+                        <a href={paper} target="_blank" rel="noopener noreferrer">
+                          {item.data.title}
+                        </a>
+                      ) : (
+                        item.data.title
+                      )}
+                    </h3>
+                    {pdf && (
+                      <a class="pub-pdf" href={pdf} target="_blank" rel="noopener noreferrer">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                          <path
+                            fill="currentColor"
+                            d="M6 2h9l5 5v15H6V2zm8 1.5V8h4.5L14 3.5zM8 11h8v1.5H8V11zm0 3h8v1.5H8V14zm0 3h5.5v1.5H8V17z"
+                          />
+                        </svg>
+                        PDF
+                      </a>
+                    )}
+                  </div>
                   <p class="pub-authors" set:html={formatAuthors(item.data.authors)} />
                   <p class="pub-meta">
                     <span>

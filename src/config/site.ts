@@ -13,9 +13,7 @@ export const site = {
     "Previously worked on brain–computer interfaces.",
     "Interned at Bybit as a blockchain security engineer.",
   ],
-  bio: `I am a CS Ph.D. student at Utah State University. I came from physics, and I now work with Yang Shi on AI for education. CodeFlow, a SIGCSE 2026 paper I first-authored, turns a student's own code into a flowchart and marks the bugs on the chart, so the feedback sits on the program instead of in a paragraph about it. A SIGCSE 2027 poster carries that into Grades 6–12: debug and learn the concept first, and only later let the model plan or generate. I may teach CS this way, including as faculty at a teaching-focused school.
-
-This year I interned at Bybit. I audited smart contracts and, after incidents, traced how the attack got through. Blockchain security is the work I want to keep doing.`,
+  bio: "About goes here.",
   seeking: {
     active: false,
     roles: [] as string[],

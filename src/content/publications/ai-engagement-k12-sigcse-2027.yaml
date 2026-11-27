@@ -6,7 +6,6 @@ authors:
 venue: SIGCSE TS
 year: 2027
 month: 2
-status: accepted
 summary: "Students still need foundations to understand, evaluate, and use AI-generated code. This poster describes a Grades 6–12 computing pathway with five learning goals and five forms of AI engagement: debugging, concept learning, planning, feature-level generation, and application-level generation. Earlier courses stay with debugging and concept learning. Later courses add planning and generation. A ten-session Advanced Python and Algorithms course shows one way to combine them, with instructors supervising how students use AI. I am the first author."
 tags:
   - CS education
@@ -14,3 +13,6 @@ tags:
   - K-12
   - Generative AI
   - AI collaboration
+links:
+  paper: https://2027.sigcse-ts.acm.org/details/sigcse-ts-2027-posters/13/Designing-AI-Engagement-Across-a-Multi-Year-Computing-Curriculum-for-Grades-6-12
+  pdf: /papers/ai-engagement-k12-sigcse-2027.pdf

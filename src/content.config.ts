@@ -56,6 +56,7 @@ const publications = defineCollection({
     links: z
       .object({
         paper: link.optional(),
+        pdf: link.optional(),
         code: link.optional(),
       })
       .optional(),

@@ -62,7 +62,7 @@ Profile, about, email, Scholar, LinkedIn, and the domain live in `src/config/sit
 | --- | --- |
 | Portrait | Replace `src/assets/portrait.jpg`. `portrait` in `site.ts` stays `"portrait.jpg"`. |
 | CV PDF | `public/cv/your-cv.pdf`, then set `cv` to `"/cv/your-cv.pdf"`. Leave `cv` empty to hide the link. |
-| Gallery photo | `src/assets/photographs/<Place>/filename.jpg`. The folder name, including a flag if you use one, is the place label. A filename containing `featured` or `Featured` is also shown on the homepage. |
+| Gallery photo | `src/assets/photographs/<Place>/01_3_featured.jpg` or `06_3.jpg`. The folder name, including a flag if you use one, is the place label. Number each place from `01`. The middle number is a score from 1 to 3. Names containing `featured` are shown on the homepage. All shows every featured photo first, highest score first, then the rest, also highest score first. A single place keeps that same order. |
 | Blog note | `src/content/blog/<slug>/index.md`, with images in that folder's `images/`. |
 | Paper | `src/content/publications/<id>.yaml` |
 | Job or internship | `src/content/experience/<id>.yaml` |
@@ -183,7 +183,7 @@ dist/                       构建结果，不提交
 | --- | --- |
 | 头像 | 替换 `src/assets/portrait.jpg`。`site.ts` 里的 `portrait` 保持 `"portrait.jpg"`。 |
 | 简历 PDF | 放到 `public/cv/your-cv.pdf`，再把 `cv` 设为 `"/cv/your-cv.pdf"`。`cv` 留空则不显示下载。 |
-| 相册照片 | `src/assets/photographs/<地点>/文件名.jpg`。文件夹名就是地点，可以带国旗 emoji。文件名里有 `featured` 或 `Featured` 的，也会出现在首页。 |
+| 相册照片 | `src/assets/photographs/<地点>/01_3_featured.jpg` 或 `06_3.jpg`。文件夹名就是地点，可以带国旗 emoji。每个地点从 `01` 编号。中间的数字是 1 到 3 的分数。文件名里有 `featured` 的会出现在首页。All 先显示所有地区的 featured，分数从高到低，然后是其余照片，同样从高分到低分。点进某一个地区时，顺序也是这样。 |
 | 博客笔记 | `src/content/blog/<slug>/index.md`，图片放在该目录的 `images/`。 |
 | 论文 | `src/content/publications/<id>.yaml` |
 | 工作或实习 | `src/content/experience/<id>.yaml` |
