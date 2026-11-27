@@ -1,24 +1,18 @@
 ---
-import { existsSync } from "node:fs";
-import { join } from "node:path";
 import { Image } from "astro:assets";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { site } from "../config/site";
-import { getNews, getPhotographs } from "../lib/content";
 import { getFeaturedPhotos } from "../lib/gallery";
 import Lightbox from "../components/Lightbox.astro";
 import PhotoGrid from "../components/PhotoGrid.astro";
-import { formatISODate, formatNewsDate, paragraphs } from "../lib/format";
+import { paragraphs } from "../lib/format";
 import { affiliationLine, cvHref, emailAddress, portrait, seekingFacts, socialLinks } from "../lib/profile";
 
-const latestNews = (await getNews()).slice(0, 2);
-const photographs = (await getPhotographs()).filter((photo) =>
-  existsSync(join(process.cwd(), "public", photo.data.src.replace(/^\//, ""))),
-);
 const featured = getFeaturedPhotos();
 const cv = cvHref();
 const email = emailAddress();
 const socials = socialLinks();
+const github = socials.find((item) => item.key === "github");
 const linkedin = socials.find((item) => item.key === "linkedin");
 const scholar = socials.find((item) => item.key === "scholar");
 const affiliation = affiliationLine();
@@ -45,7 +39,7 @@ const focusLines = site.researchFocus
                 alt={photo.alt}
                 width={320}
                 widths={[128, 256, 320, 640]}
-                sizes="(max-width: 720px) 6rem, 18.25rem"
+                sizes="(max-width: 720px) 6rem, 15rem"
                 format="webp"
                 loading="eager"
                 fetchpriority="high"
@@ -96,14 +90,14 @@ const focusLines = site.researchFocus
           )
         }
         {
-          (cv || email || scholar || linkedin) && (
+          (cv || email || github || scholar || linkedin) && (
             <div class="contact">
               {cv && (
                 <a class="button" href={cv} download>
                   Download CV
                 </a>
               )}
-              {(email || scholar || linkedin) && (
+              {(email || github || scholar || linkedin) && (
                 <div class="contact-links">
                   {
                     email && (
@@ -119,8 +113,18 @@ const focusLines = site.researchFocus
                     )
                   }
                   {
+                    github && (
+                      <a class="icon-link" href={github.href}>
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                          <path fill="currentColor" d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.3c-3.3.7-4-1.4-4-1.4-.5-1.4-1.3-1.7-1.3-1.7-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.3 5 18.3 5.3 18.3 5.3c.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3Z" />
+                        </svg>
+                        <span>GitHub</span>
+                      </a>
+                    )
+                  }
+                  {
                     scholar && (
-                      <a class="icon-link" href={scholar.href}>
+                      <a class="icon-link" href={scholar.href} target="_blank" rel="noopener noreferrer">
                         <svg viewBox="0 0 24 24" aria-hidden="true">
                           <path
                             fill="currentColor"
@@ -133,7 +137,7 @@ const focusLines = site.researchFocus
                   }
                   {
                     linkedin && (
-                      <a class="icon-link" href={linkedin.href}>
+                      <a class="icon-link" href={linkedin.href} target="_blank" rel="noopener noreferrer">
                         <svg viewBox="0 0 24 24" aria-hidden="true">
                           <path
                             fill="currentColor"
@@ -167,257 +171,31 @@ const focusLines = site.researchFocus
           )
         }
 
-        <nav class="page-jumps" aria-label="Sections">
-          <a href="/publications">
-            <span class="jump-kicker">Publications</span>
-            <span class="jump-note">Check my papers.</span>
-          </a>
-          <a href="/experience">
-            <span class="jump-kicker">Experience</span>
-            <span class="jump-note">Degrees and internships.</span>
-          </a>
-          <a href="/news">
-            <span class="jump-kicker">News</span>
-            <span class="jump-note">Papers and other updates.</span>
-          </a>
-          <a href="/blog">
-            <span class="jump-kicker">Blog</span>
-            <span class="jump-note">Technical notes on blockchain and smart contracts.</span>
-          </a>
-        </nav>
-
-        {
-          latestNews.length > 0 && (
-            <section class="home-news" aria-labelledby="latest-news">
-              <div class="section-head">
-                <h2 id="latest-news">Latest News</h2>
-                <a href="/news">All news →</a>
-              </div>
-              <ul class="news-quiet-list">
-                {
-                  latestNews.map((item) => (
-                    <li>
-                      <time datetime={formatISODate(item.data.date)}>{formatNewsDate(item.data.date)}</time>
-                      <span class="news-label">{item.data.label}</span>
-                      <span>
-                        {item.data.content}
-                        {item.data.href && (
-                          <>
-                            {" "}
-                            <a href={item.data.href}>{item.data.linkLabel || "Link"}</a>
-                          </>
-                        )}
-                      </span>
-                    </li>
-                  ))
-                }
-              </ul>
-            </section>
-          )
-        }
-
-        {
-          photographs.length > 0 && (
-            <section class="photographs" aria-labelledby="photographs">
-              <div class="section-head">
-                <h2 id="photographs">Photographs</h2>
-              </div>
-              <button type="button" class="photo-stage" data-photo-stage aria-label="Show the next photograph">
-                {
-                  photographs.map((photo, index) => (
-                    <figure class={index === 0 ? "is-current" : undefined} data-caption={photo.data.year ? `${photo.data.caption}, ${photo.data.year}` : photo.data.caption}>
-                      <img src={photo.data.src} alt={photo.data.alt} />
-                    </figure>
-                  ))
-                }
-              </button>
-              <p class="photo-caption" data-photo-caption>
-                {photographs[0].data.year
-                  ? `${photographs[0].data.caption}, ${photographs[0].data.year}`
-                  : photographs[0].data.caption}
-              </p>
-              <script>
-                const stage = document.querySelector<HTMLButtonElement>("[data-photo-stage]");
-                const caption = document.querySelector<HTMLElement>("[data-photo-caption]");
-                const slides = stage ? [...stage.querySelectorAll<HTMLElement>("figure")] : [];
-                const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-                const dwell = 4200;
-                const maxWidth = 576;
-                const maxHeight = 448;
-                let index = 0;
-                let busy = false;
-                let pending = false;
-                let resizePending = false;
-                let timer = 0;
-
-                function writeCaption() {
-                  if (!caption) return;
-                  caption.textContent = slides[index]?.dataset.caption ?? "";
-                }
-
-                function limits() {
-                  const parent = stage?.parentElement?.clientWidth ?? maxWidth;
-                  return { maxW: Math.max(1, Math.min(parent - 2, maxWidth)), maxH: maxHeight };
-                }
-
-                function measure(img: HTMLImageElement) {
-                  const { maxW, maxH } = limits();
-                  const nw = img.naturalWidth;
-                  const nh = img.naturalHeight;
-                  if (!nw || !nh) return { w: Math.min(maxW, maxWidth), h: Math.round(Math.min(maxW, maxWidth) * 0.56) };
-                  const fit = Math.min(maxW / nw, maxH / nh);
-                  return { w: Math.max(1, Math.round(nw * fit)), h: Math.max(1, Math.round(nh * fit)) };
-                }
-
-                function layout(figure: HTMLElement) {
-                  const img = figure.querySelector("img");
-                  const size = img ? measure(img) : { w: maxWidth, h: 160 };
-                  figure.style.width = `${size.w}px`;
-                  figure.style.height = `${size.h}px`;
-                  return size;
-                }
-
-                function fitStage(size: { w: number; h: number }, animate: boolean) {
-                  if (!stage) return;
-                  if (!animate) stage.style.transition = "none";
-                  stage.style.width = `${size.w}px`;
-                  stage.style.height = `${size.h}px`;
-                  if (!animate) {
-                    stage.getBoundingClientRect();
-                    stage.style.transition = "";
-                  }
-                }
-
-                function restage(animate: boolean) {
-                  slides.forEach((figure) => layout(figure));
-                  const current = slides[index];
-                  if (!current) return;
-                  fitStage(layout(current), animate && !reduced);
-                }
-
-                function finish(current: HTMLElement, incoming: HTMLElement, next: number) {
-                  current.style.transition = "none";
-                  incoming.style.transition = "none";
-                  current.classList.remove("is-current", "is-leaving");
-                  incoming.classList.remove("is-incoming");
-                  incoming.classList.add("is-current");
-                  current.style.transform = "";
-                  incoming.style.transform = "";
-                  current.getBoundingClientRect();
-                  current.style.transition = "";
-                  incoming.style.transition = "";
-                  index = next;
-                  busy = false;
-                  writeCaption();
-                  if (resizePending) {
-                    resizePending = false;
-                    restage(false);
-                  }
-                  if (pending) {
-                    pending = false;
-                    advance();
-                  }
-                }
-
-                function show(next: number) {
-                  if (!stage || slides.length < 2 || next === index) return;
-                  const current = slides[index];
-                  const incoming = slides[next];
-                  if (!current || !incoming) return;
-                  const currentSize = layout(current);
-                  const nextSize = layout(incoming);
-                  if (reduced) {
-                    current.classList.remove("is-current");
-                    incoming.classList.add("is-current");
-                    index = next;
-                    fitStage(nextSize, false);
-                    writeCaption();
-                    return;
-                  }
-                  busy = true;
-                  incoming.classList.add("is-incoming");
-                  incoming.style.transition = "none";
-                  incoming.style.transform = `translateX(${-nextSize.w}px)`;
-                  incoming.getBoundingClientRect();
-                  incoming.style.transition = "";
-                  current.classList.add("is-leaving");
-                  current.style.transform = `translateX(${Math.max(currentSize.w, nextSize.w)}px)`;
-                  incoming.style.transform = "translateX(0)";
-                  fitStage(nextSize, true);
-                  const done = (event: TransitionEvent) => {
-                    if (event.target !== incoming || event.propertyName !== "transform") return;
-                    incoming.removeEventListener("transitionend", done);
-                    finish(current, incoming, next);
-                  };
-                  incoming.addEventListener("transitionend", done);
-                }
-
-                function arm() {
-                  window.clearTimeout(timer);
-                  if (reduced || slides.length < 2 || document.hidden) return;
-                  timer = window.setTimeout(() => advance(), dwell);
-                }
-
-                function advance() {
-                  if (slides.length < 2) return;
-                  if (busy) {
-                    pending = true;
-                    return;
-                  }
-                  show((index + 1) % slides.length);
-                  arm();
-                }
-
-                function whenImagesReady() {
-                  const images = slides
-                    .map((figure) => figure.querySelector("img"))
-                    .filter((img): img is HTMLImageElement => img instanceof HTMLImageElement);
-                  const pendingImages = images.filter((img) => !(img.complete && img.naturalWidth));
-                  if (pendingImages.length === 0) {
-                    restage(false);
-                    return;
-                  }
-                  let left = pendingImages.length;
-                  pendingImages.forEach((img) => {
-                    const done = () => {
-                      left -= 1;
-                      if (left === 0) restage(false);
-                    };
-                    img.addEventListener("load", done, { once: true });
-                    img.addEventListener("error", done, { once: true });
-                  });
-                }
-
-                if (stage && slides.length > 0) {
-                  whenImagesReady();
-                  window.addEventListener("resize", () => {
-                    if (busy) {
-                      resizePending = true;
-                      return;
-                    }
-                    restage(false);
-                  });
-                }
-
-                if (stage && slides.length > 1) {
-                  stage.addEventListener("click", () => advance());
-                  document.addEventListener("visibilitychange", () => arm());
-                  arm();
-                }
-              </script>
-            </section>
-          )
-        }
-
         {
           featured.length > 0 && (
-            <section class="gallery" aria-labelledby="gallery">
-              <div class="section-head">
-                <h2 id="gallery">Featured Photographs</h2>
-                <a href="/gallery">All photographs →</a>
-              </div>
-              <PhotoGrid photos={featured} featured mosaic />
-            </section>
+            <>
+              <a class="photo-scroll-cue" href="#featured-photographs">
+                <span>Scroll down to see my photographs</span>
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M12 4v16m-6-6 6 6 6-6" />
+                </svg>
+              </a>
+              <section class="gallery" id="featured-photographs" aria-labelledby="gallery">
+                <div class="section-head">
+                  <h2 id="gallery">Featured Photographs</h2>
+                  <a href="/gallery">All photographs →</a>
+                </div>
+                <PhotoGrid photos={featured} featured mosaic />
+              </section>
+            </>
           )
         }
       </div>

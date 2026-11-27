@@ -13,6 +13,7 @@ Node.js 20 or newer.
 ```bash
 npm install
 npm run dev       # http://localhost:4321
+npm test          # note import regression tests
 npm run check     # typecheck
 npm run build     # writes dist/
 npm run preview   # serves dist/
@@ -26,7 +27,7 @@ Before a public deploy, set `url` in `src/config/site.ts` to the real domain and
 
 | Path | Page |
 | --- | --- |
-| `/` | Profile, about, news, featured photographs |
+| `/` | Profile, about, featured photographs |
 | `/publications` | Papers, newest year first |
 | `/experience` | Education and the Bybit internship |
 | `/blog` | Notes, filtered by section |
@@ -56,7 +57,7 @@ dist/                       build output, not committed
 
 ### Where to add something
 
-Profile, about, email, Scholar, LinkedIn, and the domain live in `src/config/site.ts`. `bio` is the About text. A blank line starts a new paragraph. An empty string hides that link.
+Profile, about, email, GitHub, Scholar, LinkedIn, and the domain live in `src/config/site.ts`. `bio` is the About text. A blank line starts a new paragraph. An empty string hides that link.
 
 | Add | Put it here |
 | --- | --- |
@@ -107,6 +108,8 @@ draft: false
 ![Diagram](./images/diagram.png)
 ```
 
+Markdown images support both inline (`![Diagram](./images/diagram.png)`) and reference (`![Diagram][diagram]` with `[diagram]: ./images/diagram.png`) syntax.
+
 `date` is `YYYY-MM-DD`. An old Markdown file can be imported with `npm run import-note -- path/to/note.md`. The import is a draft. Set `draft: false` after checking the title, description, date, and images.
 
 ```yaml
@@ -117,11 +120,11 @@ href: https://example.com/paper
 linkLabel: Paper
 ```
 
-`href` and `linkLabel` are optional. The homepage shows the two newest items.
+`href` and `linkLabel` are optional. News items appear on `/news`.
 
 Education and experience are YAML files. Omit `end` on a current role or degree. On education, `precision: year` shows years only.
 
-Do not put gallery photos in `public/photographs/`. Files there are copied into the site unchanged. `src/content/projects/` is not used by the current pages.
+Do not put gallery photos in `public/photographs/`. Files there are copied into the site unchanged.
 
 ## 中文
 
@@ -134,6 +137,7 @@ Do not put gallery photos in `public/photographs/`. Files there are copied into 
 ```bash
 npm install
 npm run dev       # http://localhost:4321
+npm test          # 笔记导入回归测试
 npm run check     # 类型检查
 npm run build     # 输出到 dist/
 npm run preview   # 预览 dist/
@@ -147,7 +151,7 @@ npm run preview   # 预览 dist/
 
 | 路径 | 页面 |
 | --- | --- |
-| `/` | 个人资料、About、新闻、精选照片 |
+| `/` | 个人资料、About、精选照片 |
 | `/publications` | 论文，按年份从新到旧 |
 | `/experience` | 教育和 Bybit 实习 |
 | `/blog` | 笔记，可按分区筛选 |
@@ -177,7 +181,7 @@ dist/                       构建结果，不提交
 
 ### 以后新内容放哪里
 
-姓名、About、邮箱、Scholar、LinkedIn 和域名都在 `src/config/site.ts`。`bio` 是首页 About。空一行就是新的一段。字符串留空，对应的链接就不会显示。
+姓名、About、邮箱、GitHub、Scholar、LinkedIn 和域名都在 `src/config/site.ts`。`bio` 是首页 About。空一行就是新的一段。字符串留空，对应的链接就不会显示。
 
 | 要加的东西 | 放在这里 |
 | --- | --- |
@@ -228,6 +232,8 @@ draft: false
 ![Diagram](./images/diagram.png)
 ```
 
+Markdown 图片支持行内写法（`![Diagram](./images/diagram.png)`），也支持引用写法（`![Diagram][diagram]` 配合 `[diagram]: ./images/diagram.png`）。
+
 `date` 的格式是 `YYYY-MM-DD`。旧 Markdown 可以用 `npm run import-note -- path/to/note.md` 导入。导入结果是草稿。核对标题、摘要、日期和图片之后，再把 `draft` 改成 `false`。
 
 ```yaml
@@ -238,8 +244,8 @@ href: https://example.com/paper
 linkLabel: Paper
 ```
 
-`href` 和 `linkLabel` 可以不写。首页显示最新的两条。
+`href` 和 `linkLabel` 可以不写。新闻显示在 `/news` 页面。
 
 教育和经历都是 YAML。当前仍在进行的经历或学位，省略 `end`。教育经历写 `precision: year` 时，页面只显示年份。
 
-不要把相册照片放到 `public/photographs/`。那里的文件会原样复制进网站。`src/content/projects/` 目前没有对应页面。
+不要把相册照片放到 `public/photographs/`。那里的文件会原样复制进网站。

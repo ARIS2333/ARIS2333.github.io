@@ -13,15 +13,13 @@ export const site = {
     "Previously worked on brain–computer interfaces.",
     "Interned at Bybit as a blockchain security engineer.",
   ],
-  bio: `I’m <strong>Kehao Zheng</strong>, a <strong>computer science PhD student at Utah State University</strong>.
+  bio: `I’m a computer science PhD student at Utah State University, where I study how <strong>AI can support learning in computer science</strong>. I design feedback systems that help students understand their code and guide their own learning when working with AI. I also help design K–12 computing courses, where students use AI to explore advanced concepts and build projects. Across this work, I want students to be able to explain what they build and apply what they learn to new problems.
 
-I studied <strong>physics at Shandong University</strong> in China. During an exchange at <strong>Bar-Ilan University</strong> in Israel, I started working with <strong>brain signals</strong> to study <strong>sleep apnea</strong>. After returning to China, I continued working with physiological data, using <strong>machine learning</strong> to study patterns in <strong>brain and heart signals</strong>.
+My background is in physics, which I studied at Shandong University in China. During an exchange at Bar-Ilan University in Israel, I began analyzing brain signals to study sleep apnea. After returning to China, I continued working with physiological data, using statistical methods and machine learning to study patterns in brain and heart signals.
 
-My PhD research focuses on <strong>AI for CS education</strong>. I design <strong>feedback systems</strong> that help students use AI to deepen their understanding while keeping them in charge of their own learning. My interest in teaching also shapes the <strong>K–12 computing courses</strong> I help design. In these courses, students use AI to explore more advanced concepts and build real-world projects. I want students to come away able to explain how their projects work and apply what they’ve learned to a new problem.
+I’ve been interested in crypto since my second year of high school. That interest led me to a <strong>blockchain security internship at Bybit</strong>, where I audited smart contracts and cross-chain bridges and investigated attacks to inform future audits and incident response. I continue to explore the field independently and share technical notes on my <a href="/blog">blog</a>.
 
-I first got interested in <strong>crypto</strong> in my second year of high school and have been learning about it on my own ever since. As a <strong>blockchain security engineering intern at Bybit</strong>, I audited <strong>smart contracts, cross-chain bridges</strong>, and the protocols they run on. I helped project teams identify risks such as overly broad permissions. When attacks occurred, I traced how they unfolded and turned those findings into guidance my team could use in future audits and incident response. I still follow the field closely and write about what I’m learning on my <strong>blog</strong>.
-
-Outside of work, I like exploring with a <strong>camera</strong>. My <strong>gallery</strong> includes photos from my travels in <strong>Israel, Japan, and Hong Kong</strong>.`,
+Outside of research, I enjoy traveling with a camera. My <a href="/gallery">gallery</a> brings together photographs from places I’ve explored, including Israel, Japan, and Hong Kong.`,
   seeking: {
     active: false,
     roles: [] as string[],
@@ -37,6 +35,5 @@ Outside of work, I like exploring with a <strong>camera</strong>. My <strong>gal
     scholar: "https://scholar.google.com/citations?user=4oc19mAAAAAJ&hl=en",
     linkedin: "https://www.linkedin.com/in/kehao-zheng-0333502b7/",
   },
-  featuredWork: [] as string[],
   url: "https://example.com",
 };

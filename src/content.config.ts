@@ -14,28 +14,6 @@ function entryId({ entry }: { entry: string }) {
   return entry.replace(/\.[^.]+$/, "").replace(/\/index$/, "");
 }
 
-const projects = defineCollection({
-  loader: glob({
-    pattern: "**/*.md",
-    base: "./src/content/projects",
-    generateId: entryId,
-  }),
-  schema: z.object({
-    title: z.string().min(1),
-    summary: z.string().min(1),
-    problem: z.string().min(1),
-    contribution: z.string().min(1),
-    outcome: z.string().min(1),
-    date: z.coerce.date(),
-    links: z
-      .object({
-        code: link.optional(),
-        demo: link.optional(),
-      })
-      .optional(),
-  }),
-});
-
 const publications = defineCollection({
   loader: glob({
     pattern: "**/*.{yaml,yml}",
@@ -52,7 +30,6 @@ const publications = defineCollection({
     status: z.enum(["accepted"]).optional(),
     summary: z.string().min(1).optional(),
     tags: z.array(z.string().min(1)).default([]),
-    projectId: z.string().min(1).optional(),
     links: z
       .object({
         paper: link.optional(),
@@ -76,7 +53,6 @@ const experience = defineCollection({
     start: z.coerce.date(),
     end: z.coerce.date().optional(),
     highlights: z.array(z.string().min(1)).min(1),
-    projectIds: z.array(z.string().min(1)).default([]),
     noteIds: z.array(z.string().min(1)).default([]),
   }),
 });
@@ -118,21 +94,6 @@ const news = defineCollection({
   }),
 });
 
-const photographs = defineCollection({
-  loader: glob({
-    pattern: "**/*.{yaml,yml}",
-    base: "./src/content/photographs",
-    generateId: entryId,
-  }),
-  schema: z.object({
-    src: link,
-    alt: z.string().min(1),
-    caption: z.string().min(1),
-    year: z.number().int().optional(),
-    order: z.number().int(),
-  }),
-});
-
 const blog = defineCollection({
   loader: glob({
     pattern: "**/*.md",
@@ -146,16 +107,13 @@ const blog = defineCollection({
     category: z.string().trim().min(1).optional(),
     tags: z.array(z.string().min(1)).default([]),
     draft: z.boolean().default(true),
-    projectId: z.string().min(1).optional(),
   }),
 });
 
 export const collections = {
-  projects,
   publications,
   experience,
   education,
   news,
-  photographs,
   blog,
 };

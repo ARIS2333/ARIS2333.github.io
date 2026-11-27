@@ -29,7 +29,7 @@ All code in this article is from the **Osaka** fork of the EELS codebase. The pr
 
 ## Introduction
 
-In [Part 1](../EELS(1)%20What%20is%20Merkle-Patricia%20Trie/), we built a thorough conceptual model of the MPT: its four node types, the three key encodings, the inline-vs-hash rule, and the four tries that Ethereum maintains. This article bridges theory and implementation.
+In [Part 1](/blog/eels-1-what-is-merkle-patricia-trie/), we built a thorough conceptual model of the MPT: its four node types, the three key encodings, the inline-vs-hash rule, and the four tries that Ethereum maintains. This article bridges theory and implementation.
 
 We will trace a concrete example — three accounts entering the state trie — through every function in [`trie.py`](https://github.com/ethereum/execution-specs/blob/forks/amsterdam/src/ethereum/forks/osaka/trie.py), reading each one line by line. By the end, you will understand not just *what* the MPT does, but *exactly how* EELS does it in code.
 

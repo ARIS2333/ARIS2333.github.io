@@ -5,13 +5,16 @@ import { formatAuthors } from "../lib/profile";
 
 const publications = await getPublications();
 const groups = groupByYear(publications);
+
+const titleText = (title: string) =>
+  title.replaceAll("-", "\u2011").replaceAll("\u2013", "\u2060\u2013\u2060");
 ---
 
 <BaseLayout
   title="Publications"
   description="Papers in reverse chronological order, with links to a manuscript, code, or project when one exists."
 >
-  <div class="shell">
+  <div class="shell pub-page">
     <header class="page-header">
       <h1>Publications</h1>
     </header>
@@ -26,16 +29,18 @@ const groups = groupByYear(publications);
               const code = item.data.links?.code;
               return (
                 <li class="pub-card" id={item.id}>
-                  <div class="pub-heading">
-                    <h3 class="pub-title">
-                      {paper ? (
-                        <a href={paper} target="_blank" rel="noopener noreferrer">
-                          {item.data.title}
-                        </a>
-                      ) : (
-                        item.data.title
-                      )}
-                    </h3>
+                  <h3 class="pub-title">
+                    {paper ? (
+                      <a href={paper} target="_blank" rel="noopener noreferrer">
+                        {titleText(item.data.title)}
+                      </a>
+                    ) : (
+                      titleText(item.data.title)
+                    )}
+                  </h3>
+                  <p class="pub-authors" set:html={formatAuthors(item.data.authors)} />
+                  <p class="pub-meta">
+                    <span>{item.data.venue}</span>
                     {pdf && (
                       <a class="pub-pdf" href={pdf} target="_blank" rel="noopener noreferrer">
                         <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -47,12 +52,6 @@ const groups = groupByYear(publications);
                         PDF
                       </a>
                     )}
-                  </div>
-                  <p class="pub-authors" set:html={formatAuthors(item.data.authors)} />
-                  <p class="pub-meta">
-                    <span>
-                      {item.data.venue} {item.data.year}
-                    </span>
                     {item.data.status === "accepted" && <span>Just accepted</span>}
                     {item.data.representative && <span>Representative</span>}
                   </p>

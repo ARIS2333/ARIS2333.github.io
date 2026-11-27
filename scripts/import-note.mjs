@@ -1,5 +1,6 @@
 import { copyFileSync, existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import path from "node:path";
+import { fromMarkdown } from "mdast-util-from-markdown";
 import { parse } from "yaml";
 
 const args = process.argv.slice(2);
@@ -79,7 +80,6 @@ const frontmatter = [
   ...(category ? [`category: ${JSON.stringify(category)}`] : []),
   tags.length > 0 ? `tags: [${tags.map((tag) => JSON.stringify(tag)).join(", ")}]` : "tags: []",
   "draft: true",
-  ...(data.projectId ? [`projectId: ${JSON.stringify(String(data.projectId))}`] : []),
   "---",
   "",
 ].join("\n");
@@ -180,21 +180,31 @@ function copyImages(text, fromDir, toDir) {
 }
 
 function imageReferences(text) {
-  const refs = [];
-  for (const match of text.matchAll(/!\[[^\]]*]\(([^)]+)\)/g)) {
-    let raw = match[1].trim();
-    if (raw.startsWith("<")) {
-      const end = raw.indexOf(">");
-      raw = raw.slice(1, end === -1 ? undefined : end).trim();
-    } else {
-      raw = raw.split(/\s+/)[0];
+  const definitions = new Map();
+  const images = [];
+  const html = [];
+
+  function visit(node) {
+    if (node.type === "definition" && !definitions.has(node.identifier)) {
+      definitions.set(node.identifier, node.url);
     }
-    if (raw) refs.push(raw);
+    if (node.type === "image" || node.type === "imageReference") images.push(node);
+    if (node.type === "html") html.push(node.value);
+    for (const child of node.children ?? []) visit(child);
   }
-  for (const match of text.matchAll(/<img\b[^>]*\bsrc\s*=\s*["']([^"']+)["']/gi)) {
-    refs.push(match[1].trim());
+
+  visit(fromMarkdown(text));
+
+  // Resolve definitions after traversal: reference images can precede their definitions.
+  const refs = images.map((node) =>
+    node.type === "image" ? node.url : definitions.get(node.identifier),
+  );
+  for (const fragment of html) {
+    for (const match of fragment.matchAll(/<img\b[^>]*\bsrc\s*=\s*["']([^"']+)["']/gi)) {
+      refs.push(match[1].trim());
+    }
   }
-  return refs;
+  return [...new Set(refs.filter(Boolean))];
 }
 
 function isRemote(reference) {
