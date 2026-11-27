@@ -5,5 +5,7 @@ start: 2022-01-01
 end: 2026-01-01
 precision: year
 detail: Taishan College
-note: |
-  I analyzed EEG, ECG, and other physiological signals with statistical methods and machine learning, mainly for disease monitoring and intent recognition.
+highlights:
+  - Analyzed EEG and ECG signals with statistics and ML
+  - Worked on health monitoring and intent recognition
+  - Co-authored Cos-ECGNet (Neurocomputing) for sleep apnea

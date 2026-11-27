@@ -6,20 +6,20 @@
 export const site = {
   name: "Kehao Zheng",
   nameAliases: ["Kehao Zheng"],
-  affiliation: "Utah State University",
+  affiliation: "CS Ph.D. student in AI4Edu",
   lab: "",
   researchFocus: [
-    "CS PhD student on AI for education.",
-    "Previously worked on brain–computer interfaces.",
-    "Interned at Bybit as a blockchain security engineer.",
+    "Former blockchain security intern at Bybit.",
+    "Background in physics and physiological signal analysis.",
+    "Enthusiastic about teaching and photography.",
   ],
-  bio: `I’m a computer science PhD student at Utah State University, where I study how <strong>AI can support learning in computer science</strong>. I design feedback systems that help students understand their code and guide their own learning when working with AI. I also help design K–12 computing courses, where students use AI to explore advanced concepts and build projects. Across this work, I want students to be able to explain what they build and apply what they learn to new problems.
+  bio: `I’m a computer science Ph.D. student at Utah State University researching <strong>AI for computing education</strong>, with a focus on <em>practical teaching and curriculum design</em>. My research builds <a href="/papers/codeflow-sigcse-2026.pdf" target="_blank" rel="noopener noreferrer">AI-powered feedback tools</a> that scaffold student learning and independent problem-solving. As a <a href="/experience">Teaching Assistant</a> at USU, I led recitation sessions, answered student questions, and graded assignments. I also co-designed a <a href="/papers/ai-engagement-k12-sigcse-2027.pdf" target="_blank" rel="noopener noreferrer">K–12 computing curriculum</a> that teaches students to work with AI on advanced tasks, building practical, industry-relevant skills to narrow the education–industry gap in the AI era. Across this work, my goal is to help students build solid foundations so they can understand, evaluate, and apply what they create.
 
-My background is in physics, which I studied at Shandong University in China. During an exchange at Bar-Ilan University in Israel, I began analyzing brain signals to study sleep apnea. After returning to China, I continued working with physiological data, using statistical methods and machine learning to study patterns in brain and heart signals.
+Alongside education, I work in <strong>blockchain and smart contract security</strong>. During an 8-month internship at <strong>Bybit</strong> as an <em>Application Security Development Engineer</em>, I audited smart contracts and cross-chain bridges, reviewed permission boundaries, and reconstructed attack paths for live security incidents to inform incident response and future audits. Independently, I publish technical notes on my <a href="/blog">blog</a> covering Ethereum execution clients (EELS and Geth), cross-chain protocols (LayerZero, Hyperlane, CCIP, CCTP), and DeFi invariants.
 
-I’ve been interested in crypto since my second year of high school. That interest led me to a <strong>blockchain security internship at Bybit</strong>, where I audited smart contracts and cross-chain bridges and investigated attacks to inform future audits and incident response. I continue to explore the field independently and share technical notes on my <a href="/blog">blog</a>.
+My analytical foundation comes from physics at Taishan College, Shandong University in China, including an exchange year at Bar-Ilan University in Israel analyzing brain signals in sleep-apnea cohort studies.
 
-Outside of research, I enjoy traveling with a camera. My <a href="/gallery">gallery</a> brings together photographs from places I’ve explored, including Israel, Japan, and Hong Kong.`,
+Outside of work, I enjoy traveling with a camera—my <a href="/gallery">gallery</a> collects photographs from Israel, Japan, Hong Kong, and elsewhere.`,
   seeking: {
     active: false,
     roles: [] as string[],

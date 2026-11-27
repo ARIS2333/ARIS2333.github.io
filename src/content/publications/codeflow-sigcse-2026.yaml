@@ -5,7 +5,7 @@ authors:
 venue: SIGCSE TS
 year: 2026
 month: 2
-summary: "Text explanations of buggy code are hard to map onto program structure, and flowchart tools still have to be drawn by hand. CodeFlow is a web tool that uses a large language model to turn a student's own code into a flowchart, marks syntax and logic errors on the chart, and shows a reference flowchart that follows their approach without giving away the full solution. I am the first author. A pilot at Utah State University tried it with CS1 Java."
+summary: "Introduces CodeFlow, a web-based LLM system that translates student code into interactive flowcharts for real-time visual debugging feedback. It highlights syntax and logic errors directly on the diagram and generates an adaptive reference flowchart aligned with the student’s own algorithmic approach without revealing the complete code, piloted in CS1 Java at Utah State University."
 tags:
   - Large language models
   - CS education

@@ -3,5 +3,6 @@ role: Application Security Development Engineer Intern
 start: 2026-01-01
 end: 2026-08-01
 highlights:
-  - Audited smart contract security and blockchain security
-  - Responded to attack incidents and analyzed attack paths
+  - Audited smart contracts, bridges, and permission boundaries
+  - Investigated live incidents and reconstructed attack paths
+  - Delivered security guidance to inform response and audits

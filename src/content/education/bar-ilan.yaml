@@ -6,5 +6,6 @@ end: 2024-01-01
 precision: year
 detail: Exchange student
 advisor: Ronny Bartsch
-note: |
-  I analyzed brain signals and other physiological recordings in large cohort studies, looking at the pathological mechanisms of sleep apnea at the level of brain networks.
+highlights:
+  - Analyzed brain and physiological signals in cohort studies
+  - Investigated sleep-apnea mechanisms via brain networks

@@ -9,7 +9,7 @@ authors:
 venue: Neurocomputing
 year: 2025
 month: 12
-summary: "Overnight lab studies do not scale, and many ECG models are too large for a wearable. Cos-ECGNet detects obstructive sleep apnea from a single-lead ECG. Cosine filters follow the repeating heart-rate pattern of an apnea event, and a second block fuses RR intervals with R-peak amplitude. The network has 1,186 parameters. I wrote the original draft and contributed the method, the investigation, and the formal analysis."
+summary: "Proposes Cos-ECGNet, a lightweight, interpretable single-lead ECG network for wearable sleep-apnea detection. Using learnable cosine filters and RRI–amplitude fusion with only 1,186 parameters, it achieves 91.82% accuracy (97.43% AUC) on Apnea-ECG and 79.63% on UCDDB, with Grad-CAM confirming apnea-related rhythm patterns. Contributed methodology, formal analysis, and original-draft writing."
 tags:
   - Deep learning
   - ECG

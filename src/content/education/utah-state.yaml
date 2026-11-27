@@ -4,5 +4,7 @@ field: Computer Science
 start: 2026-01-01
 precision: year
 advisor: Yang Shi
-note: |
-  My research is AI for education. I study how students can use AI more effectively and learn from it, and I build human-in-the-loop feedback systems.
+highlights:
+  - Research AI for computing education and pedagogy
+  - Build AI feedback tools to scaffold student learning
+  - Co-design K–12 curricula for industry-relevant AI skills

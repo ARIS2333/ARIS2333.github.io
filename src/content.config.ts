@@ -73,6 +73,7 @@ const education = defineCollection({
     advisor: z.string().min(1).optional(),
     detail: z.string().min(1).optional(),
     note: z.string().min(1).optional(),
+    highlights: z.array(z.string().min(1)).default([]),
     lab: z.string().min(1).optional(),
     thesis: z.string().min(1).optional(),
     thesisUrl: link.optional(),

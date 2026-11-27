@@ -52,6 +52,13 @@ const workExperience = [...jobs].sort(
                 )}
                 {entry.data.note &&
                   paragraphs(entry.data.note).map((paragraph) => <p class="note">{paragraph}</p>)}
+                {entry.data.highlights.length > 0 && (
+                  <ul>
+                    {entry.data.highlights.map((highlight) => (
+                      <li>{highlight}</li>
+                    ))}
+                  </ul>
+                )}
                 {(entry.data.thesis || entry.data.thesisUrl) && (
                   <p class="meta-line">
                     {entry.data.thesisUrl ? (

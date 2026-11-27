@@ -6,7 +6,7 @@ authors:
 venue: SIGCSE TS
 year: 2027
 month: 2
-summary: "Students still need foundations to understand, evaluate, and use AI-generated code. This poster describes a Grades 6–12 computing pathway with five learning goals and five forms of AI engagement: debugging, concept learning, planning, feature-level generation, and application-level generation. Earlier courses stay with debugging and concept learning. Later courses add planning and generation. A ten-session Advanced Python and Algorithms course shows one way to combine them, with instructors supervising how students use AI. I am the first author."
+summary: "Presents a multi-year Grades 6–12 computing curriculum that integrates generative AI systematically while preserving programming foundations and narrowing the education–industry gap. Courses progress across five forms of instructor-supervised AI engagement—from debugging and concept learning to planning, feature-level, and application-level generation—demonstrated through a ten-session Advanced Python & Algorithms course."
 tags:
   - CS education
   - Curriculum design
