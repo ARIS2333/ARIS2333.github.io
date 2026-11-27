@@ -9,7 +9,7 @@ const schools = await getEducation();
 
 const recency = (end?: Date) => (end ? end.getTime() : Number.POSITIVE_INFINITY);
 
-const internships = [...jobs].sort(
+const workExperience = [...jobs].sort(
   (a, b) =>
     recency(b.entry.data.end) - recency(a.entry.data.end) ||
     b.entry.data.start.getTime() - a.entry.data.start.getTime(),
@@ -18,7 +18,7 @@ const internships = [...jobs].sort(
 
 <BaseLayout
   title="Experience"
-  description="Education and internships, from newest to oldest."
+  description="Education and work experience, from newest to oldest."
 >
   <div class="experience-page">
     <header class="page-header">
@@ -66,11 +66,11 @@ const internships = [...jobs].sort(
           }
         </div>
       </section>
-      <section class="experience-pane" aria-labelledby="intern-pane">
-        <h2 id="intern-pane" class="pane-head">Internships</h2>
+      <section class="experience-pane" aria-labelledby="work-pane">
+        <h2 id="work-pane" class="pane-head">Work Experience</h2>
         <div class="record-list">
           {
-            internships.map((item) => (
+            workExperience.map((item) => (
               <article class="record">
                 <h3>{item.entry.data.organization}</h3>
                 {item.entry.data.team && <p class="team">{item.entry.data.team}</p>}
@@ -78,11 +78,13 @@ const internships = [...jobs].sort(
                   <p class="role-line">{item.entry.data.role}</p>
                   <p class="dates">{formatRange(item.entry.data.start, item.entry.data.end)}</p>
                 </div>
-                <ul>
-                  {item.entry.data.highlights.map((highlight) => (
-                    <li>{highlight}</li>
-                  ))}
-                </ul>
+                {item.entry.data.highlights.length > 0 && (
+                  <ul>
+                    {item.entry.data.highlights.map((highlight) => (
+                      <li>{highlight}</li>
+                    ))}
+                  </ul>
+                )}
                 <RelatedList
                   items={item.relatedNotes.map((note) => ({
                     kind: "Note",

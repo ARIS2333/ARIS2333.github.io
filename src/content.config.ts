@@ -52,7 +52,7 @@ const experience = defineCollection({
     role: z.string().min(1),
     start: z.coerce.date(),
     end: z.coerce.date().optional(),
-    highlights: z.array(z.string().min(1)).min(1),
+    highlights: z.array(z.string().min(1)).default([]),
     noteIds: z.array(z.string().min(1)).default([]),
   }),
 });

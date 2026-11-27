@@ -29,7 +29,7 @@ Outside of research, I enjoy traveling with a camera. My <a href="/gallery">gall
   email: "zkh200310@gmail.com",
   portrait: "portrait.jpg",
   portraitAlt: "Portrait of Kehao Zheng",
-  cv: "",
+  cv: "/cv/Kehao_Zheng_CV.pdf",
   links: {
     github: "",
     scholar: "https://scholar.google.com/citations?user=4oc19mAAAAAJ&hl=en",
