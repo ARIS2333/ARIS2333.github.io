@@ -236,7 +236,7 @@ main:focus {
 }
 
 .intro-copy {
-  max-width: 38rem;
+  max-width: none;
   min-width: 0;
   font-size: 1.08rem;
   line-height: 1.65;
